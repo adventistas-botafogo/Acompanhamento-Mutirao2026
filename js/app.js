@@ -264,7 +264,7 @@ const SETEME={
   site:'https://giving.7me.app/guest-donation/church/58caf077-0310-4b5d-8fc6-309964305664',
   ios:'https://apps.apple.com/br/app/7me/id1344775660',
   android:'https://play.google.com/store/apps/details?id=com.iatec.acms.me',
-  caminho:['Dizimar e ofertar','Ofertas para a minha igreja','Mutirão de Natal']
+  caminho:['Dizimar e ofertar','Outras ofertas','Ofertas para a minha igreja','Mutirão de Natal']
 };
 function renderSeteme(){
   const box=$('seteme');
