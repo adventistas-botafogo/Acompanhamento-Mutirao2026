@@ -2,36 +2,40 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#3A0A10">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Placar da arrecadação</title>
+<title>Mutirão de Natal 2026 · IASD Botafogo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=Literata:ital,opsz,wght@1,7..72,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#F2F4F1;--card:#FFFFFF;--ink:#1B2320;--mid:#56615B;--muted:#86908A;--line:#DCE1DC;--track:#E7EBE6;
-  --azul:#2F6FD1;--laranja:#E3622A;--verde:#1E8F3A;--ok:#1E7A34;--okbg:#E2F3E4;--warn:#9A5B00;--danger:#B3261E;
-  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;--body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#3A0A10;--card:#4A121A;--ink:#FBEEDB;--mid:#E0C4A6;--muted:#B39279;--line:#5F1E27;--track:#2A060B;
+  --gold:#F4B321;--azul:#5B9BF0;--laranja:#FF8845;--verde:#3FC46D;--ok:#F4B321;--okbg:#5A3A0C;--warn:#FFD27A;--danger:#FF9A8F;
+  --serif:"Literata",Georgia,"Times New Roman",serif;--display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;--body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#111513;--card:#1A1F1C;--ink:#EDF1ED;--mid:#B7C0BA;--muted:#848E88;--line:#2B322E;--track:#262C28;
-  --azul:#4A8BEA;--laranja:#F07A45;--verde:#34B356;--ok:#6BD17F;--okbg:#1C3322;--warn:#F2B35A;--danger:#FF8A80;}}
-:root[data-theme="dark"]{
-  --bg:#111513;--card:#1A1F1C;--ink:#EDF1ED;--mid:#B7C0BA;--muted:#848E88;--line:#2B322E;--track:#262C28;
-  --azul:#4A8BEA;--laranja:#F07A45;--verde:#34B356;--ok:#6BD17F;--okbg:#1C3322;--warn:#F2B35A;--danger:#FF8A80;}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
 main{max-width:760px;margin:0 auto;padding:28px 18px 64px}
-h1{font:700 clamp(30px,7vw,44px)/1.05 var(--display);letter-spacing:-0.02em;margin:0}
+.hero{text-align:center;padding:8px 0 0}
+h1{margin:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+h1 img{display:block;width:auto;height:auto;max-width:min(340px,78vw);max-height:230px}
+h1 .yr{font:700 clamp(28px,7vw,38px)/1 var(--display);color:var(--gold);letter-spacing:0.12em}
+.church{font:500 15px/1.3 var(--body);color:var(--mid);margin:12px 0 0;letter-spacing:0.08em}
+.verse{margin:30px auto 40px;padding:24px 0 0;border-top:1px solid var(--line);max-width:62ch;text-align:left}
+.verse p{font:italic 400 17px/1.7 var(--serif);margin:0;color:var(--ink)}
+.verse sup{font:500 10px/1 var(--body);color:var(--muted);font-style:normal;margin:0 2px 0 1px;vertical-align:5px}
+.verse cite{display:block;margin-top:12px;font:600 13px/1.3 var(--body);font-style:normal;color:var(--gold)}
+.placar h2.big{font:700 26px/1.1 var(--display);letter-spacing:-0.01em}
 h2{font:700 20px/1.2 var(--display);margin:0}
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
 .sub{color:var(--mid);margin:8px 0 0;font-size:15px}
 button,select,input{font:inherit;color:inherit}
 .btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 14px;font-weight:600;font-size:14px;cursor:pointer;min-height:40px}
 .btn:hover{border-color:var(--muted)}
-.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.btn.primary{background:var(--gold);color:#3A0A10;border-color:var(--gold)}
+.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;font-size:14px;min-height:40px;max-width:100%}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 22px}
 .board{display:grid;gap:10px;margin:0 0 30px}
@@ -41,18 +45,28 @@ select{border:1px solid var(--line);background:var(--card);border-radius:10px;pa
 .team .det{font-size:13px;color:var(--mid);margin-top:3px}
 .team .score{text-align:right;font:700 40px/1 var(--display);font-variant-numeric:tabular-nums}
 .team .score small{display:block;font:500 12px/1.3 var(--body);color:var(--muted);margin-top:4px}
-.lead{font:600 11px/1 var(--body);background:var(--okbg);color:var(--ok);border-radius:99px;padding:4px 8px;margin-left:8px;vertical-align:3px}
+.lead{display:inline-block;white-space:nowrap;font:600 11px/1 var(--body);background:var(--gold);color:#3A0A10;border-radius:99px;padding:4px 8px;margin-left:8px;vertical-align:3px}
 .item{padding:18px 0;border-top:1px solid var(--line)}
 .ih{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
 .ih .meta{font-size:13px;color:var(--mid);margin-top:2px}
 .tag{font-size:12px;color:var(--mid);white-space:nowrap}
 .tag.closed{color:var(--muted)}
 .tag.soon{color:var(--warn);font-weight:600}
-.bar{display:grid;grid-template-columns:64px minmax(0,1fr) 116px;gap:10px;align-items:center;margin-top:8px;font-size:14px}
+.bar{display:grid;grid-template-columns:64px minmax(0,1fr) 136px;gap:10px;align-items:center;margin-top:8px;font-size:14px}
 .bar .n{color:var(--mid)}
-.trk{height:12px;background:var(--track);border-radius:6px;overflow:hidden}
-.fil{height:100%;border-radius:6px;transition:width .5s ease}
-.val{text-align:right;font-variant-numeric:tabular-nums;color:var(--mid)}
+.trk{position:relative;height:14px;background:var(--track);border-radius:7px;overflow:hidden}
+.seg{position:absolute;top:0;bottom:0;left:0;transition:width .5s ease}
+.seg.base{border-radius:7px}
+.seg.base.full{border-radius:7px 0 0 7px}
+.seg.extra{left:50%;background:repeating-linear-gradient(135deg,var(--c) 0 5px,color-mix(in srgb,var(--c) 40%,var(--track)) 5px 9px)}
+.goal{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--ink)}
+.more{position:absolute;right:5px;top:0;line-height:14px;font-size:12px;font-weight:700;color:#fff}
+.scale{display:grid;grid-template-columns:64px minmax(0,1fr) 136px;gap:10px;margin-top:10px;font-size:11px;color:var(--muted);line-height:1}
+.scale .sc{position:relative;height:12px}
+.scale .sc span{position:absolute;top:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--mid);margin:0 0 6px}
+.legend i{display:inline-block;width:18px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:6px;font-style:normal}
+.val{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--mid)}
 .val.hit{color:var(--ok);font-weight:600}
 .foot{margin-top:28px;font-size:13px;color:var(--muted)}
 .empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:24px;color:var(--mid)}
@@ -67,21 +81,27 @@ input{display:block;width:100%;margin-top:4px;border:1px solid var(--line);backg
 .eitem .hd label{flex:1}
 .x{border:none;background:none;color:var(--danger);font-size:13px;font-weight:600;cursor:pointer;padding:8px 4px;min-height:40px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
-.foot .x:hover{color:var(--ink)!important;text-decoration:underline}
+.foot .x:hover{color:var(--gold)!important;text-decoration:underline}
 #lMsg:empty{display:none}
 .msg{font-size:13px;margin-left:4px}
 .msg.err{color:var(--danger)}.msg.okm{color:var(--ok)}
-@media (max-width:480px){.bar{grid-template-columns:56px minmax(0,1fr) 100px;font-size:13px}.team .score{font-size:34px}}
-@media (prefers-reduced-motion:reduce){.fil{transition:none}}
+@media (max-width:480px){.verse p{font-size:15px;line-height:1.6}.verse{margin:22px 0 30px;padding-top:18px}.bar,.scale{grid-template-columns:56px minmax(0,1fr) 128px}.bar{font-size:13px}.team .score{font-size:34px}}
+@media (prefers-reduced-motion:reduce){.seg{transition:none}}
 </style>
 </head>
 <body>
 <main>
-  <div class="top">
-    <div>
-      <h1>Placar da arrecadação</h1>
-      <p class="sub" id="sub">Carregando dados…</p>
-    </div>
+  <header class="hero">
+    <h1><img src="logo-mutirao.png" alt="Mutirão de Natal"><span class="yr">2026</span></h1>
+    <p class="church">IASD Botafogo</p>
+    <blockquote class="verse">
+      <p><sup>32</sup>Da multidão dos que creram era um o coração e a alma. Ninguém considerava exclusivamente sua nem uma das coisas que possuía; tudo, porém, lhes era comum. <sup>33</sup>Com grande poder, os apóstolos davam testemunho da ressurreição do Senhor Jesus, e em todos eles havia abundante graça. <sup>34</sup>Não havia nenhum necessitado entre eles, porque os que possuíam terras ou casas, vendendo-as, traziam os valores correspondentes <sup>35</sup>e os depositavam aos pés dos apóstolos; então se distribuía a cada um conforme a sua necessidade.</p>
+      <cite>Atos 4:32–35</cite>
+    </blockquote>
+  </header>
+  <div class="placar">
+    <h2 class="big">Placar da arrecadação</h2>
+    <p class="sub" id="sub">Carregando dados…</p>
   </div>
   <div class="tools">
     <select id="sel" aria-label="Escolher parcial" hidden></select>
@@ -164,11 +184,13 @@ function render(){
     <div><div class="nm">Equipe ${t.nome}${hits[i]===top&&top>0&&unico?'<span class="lead">Na frente</span>':''}</div>
     <div class="det">${pend} ${pend===1?'meta aberta ainda pendente':'metas abertas ainda pendentes'}</div></div>
     <div class="score">${hits[i]}<small>de ${itens.length} metas</small></div></div>`}).join('');
-  $('list').innerHTML=itens.map(it=>{
+  $('list').innerHTML=`<div class="legend"><span><i style="background:var(--mid)"></i>até a meta</span><span><i style="background:repeating-linear-gradient(135deg,var(--mid) 0 5px,var(--track) 5px 9px)"></i>acima da meta</span><span>» passou de 2× a meta</span></div>`+itens.map(it=>{
     const pz=prazoTxt(it,ref);
     return `<div class="item"><div class="ih"><div><h2>${esc(it.nome)}</h2><div class="meta">Meta de ${fmt(it.meta)} ${esc(it.unidade||'')} por equipe</div></div><span class="tag ${pz.c}">${pz.t}</span></div>
+    <div class="scale" aria-hidden="true"><span></span><div class="sc"><span style="left:50%;transform:translateX(-50%)">meta</span><span style="right:0">2×</span></div><span></span></div>
     ${TEAMS.map(t=>{const v=it.valores?.[t.id]||0,pc=it.meta>0?v/it.meta*100:0,hit=pc>=100;
-      return `<div class="bar"><span class="n">${t.nome}</span><div class="trk" role="img" aria-label="${t.nome}: ${Math.round(pc)}% da meta"><div class="fil" style="width:${Math.min(pc,100)}%;background:var(--${t.id})"></div></div><span class="val ${hit?'hit':''}">${fmt(v)} · ${Math.round(pc)}%${hit?' ✓':''}</span></div>`}).join('')}
+      const base=Math.min(pc,100)/2,extra=hit?(Math.min(pc,200)-100)/2:0;
+      return `<div class="bar"><span class="n">${t.nome}</span><div class="trk" role="img" aria-label="${t.nome}: ${Math.round(pc)}% da meta" style="--c:var(--${t.id})"><div class="seg base ${hit?'full':''}" style="width:${base}%;background:var(--${t.id})"></div>${extra>0?`<div class="seg extra" style="width:${extra}%"></div>`:''}<div class="goal"></div>${pc>200?'<span class="more">»</span>':''}</div><span class="val ${hit?'hit':''}">${fmt(v)} · ${Math.round(pc)}%${hit?' ✓':''}</span></div>`}).join('')}
     </div>`}).join('');
   $('foot').textContent=p.atualizadoEm?'Última atualização: '+new Date(p.atualizadoEm).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'';
 }
