@@ -109,7 +109,15 @@ select{border:1px solid var(--line);background:var(--card);border-radius:10px;pa
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}
 label{display:block;font-size:13px;color:var(--mid);font-weight:500}
 input{display:block;width:100%;margin-top:4px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:15px;min-height:40px}
-.eitem{border-top:1px solid var(--line);padding:14px 0}
+.eitem{position:relative;border-top:1px solid var(--line);padding:14px 0}
+.eitem.chg::before,.eitem.new::before{content:"";position:absolute;left:-11px;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--gold)}
+.eitem.new::before{background:var(--verde)}
+input.chg{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--bg))}
+label:has(input.chg){color:var(--gold)}
+.was{display:inline-block;margin-left:6px;font:600 11px/1.5 var(--body);color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);border-radius:99px;padding:0 7px;white-space:nowrap}
+.was.neg{color:var(--danger);background:color-mix(in srgb,var(--danger) 14%,transparent)}
+.chgc{font-size:13px;font-weight:600;color:var(--gold)}
+.chgc:empty{display:none}
 .eitem .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:10px}
 .eitem .hd{display:flex;gap:10px;align-items:flex-end}
 .eitem .hd label{flex:1}
@@ -287,8 +295,8 @@ function renderAuth(){
 }
 
 function toLocalInput(iso){if(!iso)return'';const d=new Date(iso);const z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
-function itemForm(it,i){
-  return `<div class="eitem"><div class="hd"><label>Item<input data-f="nome" value="${esc(it.nome)}" placeholder="Alimentos"></label><button type="button" class="x" data-rm="1">Remover</button></div>
+function itemForm(it,i,isNew){
+  return `<div class="eitem${isNew?' new':''}"><div class="hd"><label>Item<input data-f="nome" value="${esc(it.nome)}" placeholder="Alimentos"></label><button type="button" class="x" data-rm="1">Remover</button></div>
   <div class="row"><label>Meta por equipe<input data-f="meta" type="number" min="0" step="any" inputmode="decimal" value="${it.meta??''}"></label>
   <label>Unidade<input data-f="unidade" value="${esc(it.unidade||'')}" placeholder="kg"></label>
   <label>Encerra em<input data-f="prazo" type="datetime-local" value="${toLocalInput(it.prazo)}"></label></div>
@@ -303,12 +311,40 @@ function openEditor(){
   <div class="grid2"><label>Nome da parcial<input id="eTit" value="${esc(primeira?SEED.titulo:(parciais.length+1)+'ª parcial')}"></label><label>Data da parcial<input id="eData" type="date" value="${primeira?SEED.data:today}"></label></div>
   <div id="eItens">${(base.itens||[]).map(itemForm).join('')}</div>
   <button type="button" class="btn" id="eAdd">Adicionar item</button>
-  <div class="actions"><button type="button" class="btn primary" id="eSave">Salvar e publicar</button><button type="button" class="btn" id="eCancel">Cancelar</button><span class="msg" id="eMsg" role="status"></span></div>`;
+  <div class="actions"><button type="button" class="btn primary" id="eSave">Salvar e publicar</button><button type="button" class="btn" id="eCancel">Cancelar</button><span class="chgc" id="eChg" aria-live="polite"></span><span class="msg" id="eMsg" role="status"></span></div>`;
   $('editor').hidden=false;render();
-  $('eAdd').onclick=()=>$('eItens').insertAdjacentHTML('beforeend',itemForm({nome:'',meta:'',unidade:'',valores:{}}));
-  $('eItens').onclick=e=>{const b=e.target.closest('[data-rm]');if(b)b.closest('.eitem').remove()};
-  $('eCancel').onclick=closeEditor;$('eSave').onclick=save;
+  removidos=0;
+  $('eAdd').onclick=()=>{$('eItens').insertAdjacentHTML('beforeend',itemForm({nome:'',meta:'',unidade:'',valores:{}},0,true));contarAlteracoes()};
+  $('eItens').onclick=e=>{const b=e.target.closest('[data-rm]');if(!b)return;const el=b.closest('.eitem');if(!el.classList.contains('new'))removidos++;el.remove();contarAlteracoes()};
+  $('editor').oninput=e=>{if(e.target.matches('input'))marcarAlteracao(e.target)};
+  $('eCancel').onclick=()=>{if(!$('eChg').textContent||confirm('Descartar as alterações feitas?'))closeEditor()};$('eSave').onclick=save;
   $('editor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+let removidos=0;
+function marcarAlteracao(inp){
+  const num=inp.type==='number',a=inp.value,b=inp.defaultValue;
+  const chg=num?(a===''?'':+a)!==(b===''?'':+b):a.trim()!==b.trim();
+  inp.classList.toggle('chg',chg);
+  const lab=inp.closest('label');let w=lab.querySelector('.was');
+  if(chg&&!inp.closest('.eitem.new')){
+    if(!w){w=document.createElement('span');w.className='was';lab.insertBefore(w,inp)}
+    let t,neg=false;
+    if(num&&a!==''&&b!==''){const d=+a-+b;neg=d<0;t=(d>0?'+':'')+fmt(d)+' (antes '+fmt(+b)+')'}
+    else if(inp.type==='datetime-local'&&b)t='antes '+new Date(b).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
+    else if(inp.type==='date'&&b)t='antes '+new Date(b+'T12:00').toLocaleDateString('pt-BR');
+    else t='antes: '+(b.trim()||'vazio');
+    w.textContent=t;w.classList.toggle('neg',neg);
+  }else w?.remove();
+  contarAlteracoes();
+}
+function contarAlteracoes(){
+  document.querySelectorAll('#eItens .eitem').forEach(el=>el.classList.toggle('chg',!el.classList.contains('new')&&!!el.querySelector('input.chg')));
+  const n=document.querySelectorAll('#editor .eitem:not(.new) input.chg, #editor .grid2 input.chg').length,novos=document.querySelectorAll('#eItens .eitem.new').length;
+  const p=[];
+  if(n)p.push(n+(n===1?' campo alterado':' campos alterados'));
+  if(novos)p.push(novos+(novos===1?' item novo':' itens novos'));
+  if(removidos)p.push(removidos+(removidos===1?' item removido':' itens removidos'));
+  $('eChg').textContent=p.join(' · ');
 }
 function closeEditor(){editing=false;$('editor').hidden=true;$('editor').innerHTML='';render()}
 async function save(){
