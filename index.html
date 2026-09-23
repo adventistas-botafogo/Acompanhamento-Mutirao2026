@@ -54,6 +54,24 @@ button,select,input{font:inherit;color:inherit}
 select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;font-size:14px;min-height:40px;max-width:100%}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 22px}
 .board{display:grid;gap:10px;margin:0 0 30px}
+.sab{background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 15%,var(--card)),var(--card) 65%);border:1px solid color-mix(in srgb,var(--gold) 38%,var(--line));border-radius:20px;padding:20px;margin:0 0 8px;box-shadow:0 14px 34px rgba(0,0,0,.3)}
+.sab-hd{display:flex;align-items:center;gap:14px}
+.sab-ic{flex:none;width:46px;height:46px;border-radius:14px;background:var(--gold);color:#3A0A10;display:grid;place-items:center}
+.sab-ic svg{width:24px;height:24px}
+.sab-k{display:block;font:600 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.sab.past .sab-k{color:var(--muted)}
+.sab h2{font:700 22px/1.1 var(--display)}
+.sab-hd .btn{margin-left:auto;flex:none}
+.sab-list{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.sab-list li{display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--bg) 55%,transparent);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600;font-size:15px;line-height:1.3}
+.sab-list li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.sab-obs{margin:14px 0 0;font-size:14px;color:var(--mid)}
+.sab-empty{margin:14px 0 0;font-size:14px;color:var(--mid)}
+.sab form{margin-top:16px}
+.sab .grid2{margin:0 0 12px}
+textarea{display:block;width:100%;margin-top:4px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font:inherit;font-size:15px;line-height:1.5;min-height:150px;resize:vertical;color:inherit}
+textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.hint{display:block;font-size:12px;color:var(--muted);margin-top:4px;font-weight:400}
 .team{display:grid;grid-template-columns:10px 1fr auto;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px 14px 0;overflow:hidden}
 .team .stripe{height:100%;min-height:56px;border-radius:0}
 .team .nm{font:700 19px/1.1 var(--display)}
@@ -150,6 +168,7 @@ label:has(input.chg){color:var(--gold)}
     <div class="brand"><img src="logo-mutirao-crop.png" alt="" width="561" height="609"><h1><span class="ln">Mutirão de Natal</span> <span class="ln yr">2026</span></h1></div>
     <p class="church"><a href="https://www.instagram.com/adventistasbotafogo/" target="_blank" rel="noopener">@adventistasbotafogo</a></p>
   </header>
+  <section class="sab" id="sabado" aria-labelledby="sabT" hidden></section>
   <div class="tools">
     <select id="sel" aria-label="Escolher parcial" hidden></select>
     <button class="btn" id="editBtn" hidden>Atualizar dados</button>
@@ -199,6 +218,7 @@ const $=id=>document.getElementById(id);
 const fmt=n=>Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let db=null,auth=null,signedIn=false,parciais=[],viewId=null,editing=false,loaded=false;
+let sabado=null,sabLoaded=false,sabEditing=false;
 
 function isClosed(it,ref){return it.prazo&&new Date(it.prazo)<ref}
 function prazoTxt(it,ref){
@@ -215,7 +235,7 @@ const current=()=>parciais.find(p=>p.id===viewId)||parciais[0];
 function render(){
   const p=current();
   $('editBtn').hidden=!signedIn||editing;
-  renderAuth();
+  renderAuth();renderSabado();
   if(!p){
     $('sub').textContent=!db?'Configuração do Firebase pendente.':loaded?'Nenhuma parcial publicada ainda.':'Carregando dados…';
     $('board').innerHTML='';$('foot').textContent='';
@@ -282,6 +302,53 @@ function setupSlider(){
 }
 
 const GLOGO='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
+const isoLocal=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function proximoSabado(){const d=new Date();d.setDate(d.getDate()+(6-d.getDay()+7)%7);return isoLocal(d)}
+const SAB_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>';
+function renderSabado(){
+  const box=$('sabado');
+  if(sabEditing)return;
+  const itens=sabado?.itens||[];
+  if(!sabLoaded||(!itens.length&&!signedIn)){box.hidden=true;box.innerHTML='';return}
+  box.hidden=false;
+  const hoje=isoLocal(new Date()),dt=sabado?.data;
+  const past=!!dt&&dt<hoje;
+  const dd=dt?new Date(dt+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}):'';
+  const k=!dt?'Doações do sábado':past?'Sábado passado · '+dd:dt===proximoSabado()?'Neste sábado · '+dd:'Sábado · '+dd;
+  box.classList.toggle('past',past);
+  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${SAB_ICON}</span><div><span class="sab-k">${k}</span><h2 id="sabT">O que trazer</h2></div>${signedIn?`<button type="button" class="btn" id="sabEdit">${itens.length?'Editar':'Definir itens'}</button>`:''}</div>
+  ${itens.length?`<ul class="sab-list">${itens.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:'<p class="sab-empty">Nenhum item definido para o sábado.</p>'}
+  ${sabado?.obs?`<p class="sab-obs">${esc(sabado.obs)}</p>`:''}`;
+  if(signedIn)$('sabEdit').onclick=editarSabado;
+}
+function editarSabado(){
+  sabEditing=true;
+  const box=$('sabado'),hoje=isoLocal(new Date());
+  const data=sabado?.data&&sabado.data>=hoje?sabado.data:proximoSabado();
+  box.classList.remove('past');
+  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${SAB_ICON}</span><div><span class="sab-k">Área restrita</span><h2 id="sabT">Itens do sábado</h2></div></div>
+  <form id="sabForm" novalidate><div class="grid2"><label>Data do sábado<input id="sabData" type="date" value="${data}"></label><label>Observação (opcional)<input id="sabObs" value="${esc(sabado?.obs||'')}" placeholder="Entregar na recepção até 10h"></label></div>
+  <label>Itens<textarea id="sabItens" placeholder="Arroz (5 kg)&#10;Feijão&#10;Óleo">${esc((sabado?.itens||[]).join('\n'))}</textarea><span class="hint">Um item por linha.</span></label>
+  <div class="actions"><button type="submit" class="btn primary" id="sabSave">Salvar e publicar</button><button type="button" class="btn" id="sabCancel">Cancelar</button><span class="msg" id="sabMsg" role="status"></span></div></form>`;
+  $('sabCancel').onclick=()=>{sabEditing=false;renderSabado()};
+  $('sabForm').onsubmit=async e=>{
+    e.preventDefault();
+    const msg=$('sabMsg');msg.className='msg';msg.textContent='';
+    const d=$('sabData').value,itens=$('sabItens').value.split('\n').map(x=>x.trim()).filter(Boolean);
+    if(!d){msg.className='msg err';msg.textContent='Informe a data do sábado.';return}
+    if(!itens.length){msg.className='msg err';msg.textContent='Informe pelo menos um item.';return}
+    $('sabSave').disabled=true;msg.textContent='Salvando…';
+    try{
+      await setDoc(doc(db,'avisos','sabado'),{data:d,itens,obs:$('sabObs').value.trim(),atualizadoEm:new Date().toISOString(),atualizadoPor:auth.currentUser?.email||''});
+      sabEditing=false;renderSabado();
+    }catch(err){
+      $('sabSave').disabled=false;msg.className='msg err';
+      msg.textContent=err?.code==='permission-denied'?'Sem permissão para salvar. Confira as regras do Firestore para a coleção “avisos”.':'Não foi possível salvar agora. Verifique a conexão e tente de novo.';
+    }
+  };
+  $('sabItens').focus();
+}
+
 function renderAuth(){
   const box=$('authBox');
   if(!auth){box.innerHTML='';return}
@@ -390,7 +457,8 @@ if(firebaseConfig.apiKey==='COLE_AQUI'){render()}
 else{
   const app=initializeApp(firebaseConfig);
   db=getFirestore(app);auth=getAuth(app);
-  onAuthStateChanged(auth,u=>{signedIn=!!u;$('lMsg').textContent='';if(!u&&editing)closeEditor();render()});
+  onAuthStateChanged(auth,u=>{signedIn=!!u;$('lMsg').textContent='';if(!u&&editing)closeEditor();if(!u)sabEditing=false;render()});
+  onSnapshot(doc(db,'avisos','sabado'),d=>{sabLoaded=true;sabado=d.exists()?d.data():null;renderSabado()},()=>{sabLoaded=false;renderSabado()});
   onSnapshot(query(collection(db,'parciais'),orderBy('data','desc')),s=>{
     loaded=true;parciais=s.docs.map(d=>({id:d.id,...d.data()}));
     if(viewId&&!parciais.some(p=>p.id===viewId))viewId=null;render();
