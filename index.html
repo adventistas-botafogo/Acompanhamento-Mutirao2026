@@ -16,6 +16,7 @@
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
 main{max-width:760px;margin:0 auto;padding:28px 18px 64px}
 .hero{text-align:center;padding:8px 0 0}
@@ -54,8 +55,37 @@ button,select,input{font:inherit;color:inherit}
 select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;font-size:14px;min-height:40px;max-width:100%}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 22px}
 .board{display:grid;gap:10px;margin:0 0 30px}
-.sab{background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 15%,var(--card)),var(--card) 65%);border:1px solid color-mix(in srgb,var(--gold) 38%,var(--line));border-radius:20px;padding:20px;margin:0 0 8px;box-shadow:0 14px 34px rgba(0,0,0,.3)}
+.sab{background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 15%,var(--card)),var(--card) 65%);border:1px solid color-mix(in srgb,var(--gold) 38%,var(--line));border-radius:20px;padding:20px;margin:0;box-shadow:0 14px 34px rgba(0,0,0,.3);min-width:0}
 .sab-hd{display:flex;align-items:center;gap:14px}
+.avisos{display:flex;flex-wrap:wrap;align-items:stretch;gap:14px;margin:0 0 8px}
+.avisos:not(:has(> :not([hidden]))){display:none}
+#sabado{flex:1 1 300px;display:flex;flex-direction:column}
+#sabado .sab-list{flex:1;grid-auto-rows:1fr;align-content:stretch}
+#pix{flex:1 1 300px}
+.pix{display:flex;flex-direction:column}
+.pix .sab-ic{background:color-mix(in srgb,#32BCAD 16%,var(--card));border:1px solid color-mix(in srgb,#32BCAD 45%,transparent)}
+.pix .sab-ic img{display:block;width:28px;height:28px}
+.pix .sab-k{color:#5FD4C6}
+.pix-key{display:flex;align-items:center;gap:8px;margin-top:18px;background:color-mix(in srgb,var(--bg) 55%,transparent);border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 14px}
+.pix-key code{flex:1;min-width:0;font:600 15px/1.3 ui-monospace,"SF Mono",Consolas,monospace;color:var(--ink);overflow-wrap:anywhere}
+.pix-key .btn{flex:none;min-height:36px;padding:7px 12px;font-size:13px}
+.pix-key .btn.ok{background:#32BCAD;border-color:#32BCAD;color:#fff}
+.pix-rcpt{margin-top:auto;padding-top:16px}
+.wa{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;background:#25D366;border-color:#25D366;color:#0B3B1E;text-decoration:none}
+.wa:hover{border-color:#fff}
+.wa[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+.wa[aria-disabled="true"]:hover{border-color:#25D366}
+.eqlbl{margin:0 0 6px;font-size:12px;font-weight:600;color:var(--mid)}
+.eq{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.eq button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;padding:8px 4px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--bg) 55%,transparent);color:var(--ink);font:700 14px/1.1 var(--display);cursor:pointer;transition:background .2s,border-color .2s}
+.eq button i{display:block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-bottom:2px}
+.eq button small{font:500 11px/1 var(--body);color:var(--muted)}
+.eq button:hover{border-color:var(--c)}
+.eq button[aria-checked="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 22%,transparent);box-shadow:inset 0 0 0 1px var(--c)}
+.eq button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.eqhint{margin:6px 0 0;font-size:12px;color:var(--danger);min-height:0}
+.eqhint:empty{display:none}
+.wa img{width:24px;height:24px;flex:none}
 .sab-ic{flex:none;width:46px;height:46px;border-radius:14px;background:var(--gold);color:#3A0A10;display:grid;place-items:center}
 .sab-ic svg{width:24px;height:24px}
 .sab-k{display:block;font:600 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
@@ -168,7 +198,10 @@ label:has(input.chg){color:var(--gold)}
     <div class="brand"><img src="logo-mutirao-crop.png" alt="" width="561" height="609"><h1><span class="ln">Mutirão de Natal</span> <span class="ln yr">2026</span></h1></div>
     <p class="church"><a href="https://www.instagram.com/adventistasbotafogo/" target="_blank" rel="noopener">@adventistasbotafogo</a></p>
   </header>
-  <section class="sab" id="sabado" aria-labelledby="sabT" hidden></section>
+  <div class="avisos">
+    <section class="sab" id="sabado" aria-labelledby="sabT" hidden></section>
+    <section class="sab pix" id="pix" aria-labelledby="pixT" hidden></section>
+  </div>
   <div class="tools">
     <select id="sel" aria-label="Escolher parcial" hidden></select>
     <button class="btn" id="editBtn" hidden>Atualizar dados</button>
@@ -235,7 +268,7 @@ const current=()=>parciais.find(p=>p.id===viewId)||parciais[0];
 function render(){
   const p=current();
   $('editBtn').hidden=!signedIn||editing;
-  renderAuth();renderSabado();
+  renderAuth();renderSabado();renderPix();
   if(!p){
     $('sub').textContent=!db?'Configuração do Firebase pendente.':loaded?'Nenhuma parcial publicada ainda.':'Carregando dados…';
     $('board').innerHTML='';$('foot').textContent='';
@@ -347,6 +380,51 @@ function editarSabado(){
     }
   };
   $('sabItens').focus();
+}
+
+const PIX={chave:'secretaria.iasdbotafogo@gmail.com',whats:'(21) 96900-7346'};
+const PIX_ICON='<img src="pix-icon.png" alt="" width="28" height="28">';
+const WA_ICON='<img src="whatsapp-icon.png" alt="" width="24" height="24">';
+function waLink(tel,equipe){
+  let d=String(tel||'').replace(/\D/g,'');
+  if(d.length<10)return'';
+  if(d.length<=11)d='55'+d;
+  return 'https://wa.me/'+d+'?text='+encodeURIComponent('Olá! Segue o comprovante do Pix para o Mutirão de Natal 2026. '+(equipe?'Minha equipe é a '+equipe+'.':'Minha equipe é: '));
+}
+function renderPix(){
+  const box=$('pix');
+  if(box.innerHTML)return;
+  box.hidden=false;
+  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${PIX_ICON}</span><div><span class="sab-k">Doações via Pix</span><h2 id="pixT">Contribua</h2></div></div>
+  <div class="pix-key"><code id="pixKey">${esc(PIX.chave)}</code><button type="button" class="btn" id="pixCopy">Copiar</button></div>
+  <div class="pix-rcpt"><div class="eqlbl" id="eqL">Qual é a sua equipe?</div>
+  <div class="eq" role="radiogroup" aria-labelledby="eqL">${TEAMS.map(t=>`<button type="button" role="radio" aria-checked="false" data-eq="${t.id}" style="--c:var(--${t.id})"><i></i>${t.nome}<small>${t.letras}</small></button>`).join('')}</div>
+  <p class="eqhint" id="eqHint" role="status"></p>
+  <a class="btn wa" id="waBtn" target="_blank" rel="noopener">${WA_ICON}Enviar comprovante no WhatsApp</a></div>`;
+  let eq=null;try{eq=localStorage.getItem('mutirao-equipe')}catch{}
+  const setEq=id=>{
+    const t=TEAMS.find(x=>x.id===id);eq=t?t.id:null;
+    box.querySelectorAll('[data-eq]').forEach(b=>{const on=b.dataset.eq===eq;b.setAttribute('aria-checked',on);b.tabIndex=on||(!eq&&b===box.querySelector('[data-eq]'))?0:-1});
+    const wa=$('waBtn');
+    if(t){wa.href=waLink(PIX.whats,t.nome);wa.removeAttribute('aria-disabled');$('eqHint').textContent=''}
+    else{wa.href=waLink(PIX.whats);wa.setAttribute('aria-disabled','true')}
+  };
+  setEq(eq);
+  const grp=box.querySelector('.eq');
+  grp.onclick=e=>{const b=e.target.closest('[data-eq]');if(!b)return;setEq(b.dataset.eq);try{localStorage.setItem('mutirao-equipe',eq)}catch{}};
+  grp.onkeydown=e=>{
+    const k={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[e.key];if(!k)return;
+    e.preventDefault();const ids=TEAMS.map(t=>t.id),i=Math.max(0,ids.indexOf(eq));const n=ids[(i+(eq?k:0)+ids.length)%ids.length];
+    setEq(n);try{localStorage.setItem('mutirao-equipe',n)}catch{}box.querySelector(`[data-eq="${n}"]`).focus();
+  };
+  $('waBtn').onclick=e=>{if(!eq){e.preventDefault();$('eqHint').textContent='Escolha a sua equipe antes de enviar.';box.querySelector('[data-eq]').focus()}};
+  $('pixCopy').onclick=async()=>{
+    const b=$('pixCopy');
+    try{await navigator.clipboard.writeText(PIX.chave)}
+    catch{const r=document.createRange();r.selectNodeContents($('pixKey'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);try{document.execCommand('copy')}catch{}}
+    b.textContent='Copiada ✓';b.classList.add('ok');
+    setTimeout(()=>{b.textContent='Copiar';b.classList.remove('ok')},2200);
+  };
 }
 
 function renderAuth(){
