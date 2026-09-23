@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Placar da arrecadação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F4F1;--card:#FFFFFF;--ink:#1B2320;--mid:#56615B;--muted:#86908A;--line:#DCE1DC;--track:#E7EBE6;
+  --azul:#2F6FD1;--laranja:#E3622A;--verde:#1E8F3A;--ok:#1E7A34;--okbg:#E2F3E4;--warn:#9A5B00;--danger:#B3261E;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;--body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111513;--card:#1A1F1C;--ink:#EDF1ED;--mid:#B7C0BA;--muted:#848E88;--line:#2B322E;--track:#262C28;
+  --azul:#4A8BEA;--laranja:#F07A45;--verde:#34B356;--ok:#6BD17F;--okbg:#1C3322;--warn:#F2B35A;--danger:#FF8A80;}}
+:root[data-theme="dark"]{
+  --bg:#111513;--card:#1A1F1C;--ink:#EDF1ED;--mid:#B7C0BA;--muted:#848E88;--line:#2B322E;--track:#262C28;
+  --azul:#4A8BEA;--laranja:#F07A45;--verde:#34B356;--ok:#6BD17F;--okbg:#1C3322;--warn:#F2B35A;--danger:#FF8A80;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+main{max-width:760px;margin:0 auto;padding:28px 18px 64px}
+h1{font:700 clamp(30px,7vw,44px)/1.05 var(--display);letter-spacing:-0.02em;margin:0}
+h2{font:700 20px/1.2 var(--display);margin:0}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.sub{color:var(--mid);margin:8px 0 0;font-size:15px}
+button,select,input{font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 14px;font-weight:600;font-size:14px;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;font-size:14px;min-height:40px;max-width:100%}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 22px}
+.board{display:grid;gap:10px;margin:0 0 30px}
+.team{display:grid;grid-template-columns:10px 1fr auto;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px 14px 0;overflow:hidden}
+.team .stripe{height:100%;min-height:56px;border-radius:0}
+.team .nm{font:700 19px/1.1 var(--display)}
+.team .det{font-size:13px;color:var(--mid);margin-top:3px}
+.team .score{text-align:right;font:700 40px/1 var(--display);font-variant-numeric:tabular-nums}
+.team .score small{display:block;font:500 12px/1.3 var(--body);color:var(--muted);margin-top:4px}
+.lead{font:600 11px/1 var(--body);background:var(--okbg);color:var(--ok);border-radius:99px;padding:4px 8px;margin-left:8px;vertical-align:3px}
+.item{padding:18px 0;border-top:1px solid var(--line)}
+.ih{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ih .meta{font-size:13px;color:var(--mid);margin-top:2px}
+.tag{font-size:12px;color:var(--mid);white-space:nowrap}
+.tag.closed{color:var(--muted)}
+.tag.soon{color:var(--warn);font-weight:600}
+.bar{display:grid;grid-template-columns:64px minmax(0,1fr) 116px;gap:10px;align-items:center;margin-top:8px;font-size:14px}
+.bar .n{color:var(--mid)}
+.trk{height:12px;background:var(--track);border-radius:6px;overflow:hidden}
+.fil{height:100%;border-radius:6px;transition:width .5s ease}
+.val{text-align:right;font-variant-numeric:tabular-nums;color:var(--mid)}
+.val.hit{color:var(--ok);font-weight:600}
+.foot{margin-top:28px;font-size:13px;color:var(--muted)}
+.empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:24px;color:var(--mid)}
+.editor{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:0 0 28px}
+.editor h2{margin-bottom:4px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}
+label{display:block;font-size:13px;color:var(--mid);font-weight:500}
+input{display:block;width:100%;margin-top:4px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:15px;min-height:40px}
+.eitem{border-top:1px solid var(--line);padding:14px 0}
+.eitem .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:10px}
+.eitem .hd{display:flex;gap:10px;align-items:flex-end}
+.eitem .hd label{flex:1}
+.x{border:none;background:none;color:var(--danger);font-size:13px;font-weight:600;cursor:pointer;padding:8px 4px;min-height:40px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.foot .x:hover{color:var(--ink)!important;text-decoration:underline}
+#lMsg:empty{display:none}
+.msg{font-size:13px;margin-left:4px}
+.msg.err{color:var(--danger)}.msg.okm{color:var(--ok)}
+@media (max-width:480px){.bar{grid-template-columns:56px minmax(0,1fr) 100px;font-size:13px}.team .score{font-size:34px}}
+@media (prefers-reduced-motion:reduce){.fil{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <h1>Placar da arrecadação</h1>
+      <p class="sub" id="sub">Carregando dados…</p>
+    </div>
+  </div>
+  <div class="tools">
+    <select id="sel" aria-label="Escolher parcial" hidden></select>
+    <button class="btn" id="editBtn" hidden>Atualizar dados</button>
+  </div>
+  <p class="msg err" id="lMsg" role="status" style="margin:0 0 16px"></p>
+  <section id="editor" class="editor" hidden></section>
+  <section class="board" id="board" aria-label="Metas batidas por equipe"></section>
+  <section id="list" aria-label="Progresso por item"></section>
+  <p class="foot"><span id="foot"></span></p>
+  <p class="foot" style="margin-top:6px"><button type="button" class="x" style="color:var(--muted);padding:0;min-height:0;font-weight:500" id="authBtn">Entrar como liderança</button></p>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// Configuração do projeto Firebase acompanhamento-mutirao2026
+const firebaseConfig = {
+  apiKey: "AIzaSyBjIU_1ma0PP1B9yUskaP2FOr9pairwUv0",
+  authDomain: "acompanhamento-mutirao2026.firebaseapp.com",
+  projectId: "acompanhamento-mutirao2026",
+  storageBucket: "acompanhamento-mutirao2026.firebasestorage.app",
+  messagingSenderId: "922912359615",
+  appId: "1:922912359615:web:827762540abba6c52f720a"
+};
+
+// Usado só para preencher o formulário na primeira vez, quando o banco ainda está vazio
+const SEED={titulo:"1ª parcial",data:"2026-09-18",itens:[
+ {nome:"Alimentos",meta:3000,unidade:"kg",prazo:"2026-12-05T21:00:00.000Z",valores:{azul:1883.8,laranja:3434.8,verde:963.8}},
+ {nome:"Cobertores",meta:80,unidade:"unidades",prazo:"2026-06-21T02:59:00.000Z",valores:{azul:65,laranja:142,verde:79}},
+ {nome:"Roupas",meta:200,unidade:"peças",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:1078,laranja:887,verde:701}},
+ {nome:"Calçados",meta:100,unidade:"pares",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:36,laranja:46,verde:10}},
+ {nome:"Brinquedos",meta:150,unidade:"unidades",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:0,verde:6}},
+ {nome:"Escovas de dente",meta:50,unidade:"unidades",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:30,verde:0}},
+ {nome:"Pasta de dente",meta:100,unidade:"unidades",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:2,laranja:20,verde:0}},
+ {nome:"Sabonete",meta:100,unidade:"unidades",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:46,laranja:113,verde:62}},
+ {nome:"Fralda geriátrica",meta:50,unidade:"pacotes",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:10,verde:0}},
+ {nome:"Kit escolar",meta:50,unidade:"kits",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:0,verde:0}}]};
+
+const TEAMS=[{id:'azul',nome:'Azul'},{id:'laranja',nome:'Laranja'},{id:'verde',nome:'Verde'}];
+const $=id=>document.getElementById(id);
+const fmt=n=>Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let db=null,auth=null,signedIn=false,parciais=[],viewId=null,editing=false,loaded=false;
+
+function isClosed(it,ref){return it.prazo&&new Date(it.prazo)<ref}
+function prazoTxt(it,ref){
+  if(!it.prazo)return{t:'',c:''};
+  const d=new Date(it.prazo);
+  const dd=d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  const hh=d.getHours()+'h'+(d.getMinutes()?String(d.getMinutes()).padStart(2,'0'):'');
+  if(d<ref)return{t:'Encerrada em '+dd,c:'closed'};
+  const days=Math.ceil((d-ref)/864e5);
+  return{t:'Até '+dd+', '+hh+(days<=14?' · faltam '+days+(days===1?' dia':' dias'):''),c:days<=14?'soon':''};
+}
+const current=()=>parciais.find(p=>p.id===viewId)||parciais[0];
+
+function render(){
+  const p=current();
+  $('editBtn').hidden=!signedIn||editing;
+  $('authBtn').textContent=signedIn?'Sair ('+(auth?.currentUser?.email||'')+')':'Entrar como liderança com Google';
+  if(!p){
+    $('sub').textContent=!db?'Configuração do Firebase pendente.':loaded?'Nenhuma parcial publicada ainda.':'Carregando dados…';
+    $('board').innerHTML='';$('foot').textContent='';
+    $('list').innerHTML=signedIn&&loaded?'<div class="empty">Toque em “Atualizar dados” para lançar a primeira parcial.</div>':'';
+    $('sel').hidden=true;return;
+  }
+  const ref=new Date();
+  const dt=new Date(p.data+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  $('sub').textContent=(p.titulo||'Parcial')+' de '+dt+'. Cada barra mostra quanto da meta a equipe já arrecadou.';
+  const sel=$('sel');sel.hidden=parciais.length<2;
+  sel.innerHTML=parciais.map(q=>`<option value="${esc(q.id)}" ${q.id===p.id?'selected':''}>${esc(q.titulo||q.id)} (${new Date(q.data+'T12:00').toLocaleDateString('pt-BR')})</option>`).join('');
+  const itens=p.itens||[];
+  const hits=TEAMS.map(t=>itens.filter(it=>it.meta>0&&(it.valores?.[t.id]||0)>=it.meta).length);
+  const top=Math.max(...hits),unico=hits.filter(h=>h===top).length===1;
+  $('board').innerHTML=TEAMS.map((t,i)=>{
+    const pend=itens.filter(it=>!isClosed(it,ref)&&it.meta>0&&(it.valores?.[t.id]||0)<it.meta).length;
+    return `<div class="team"><div class="stripe" style="background:var(--${t.id})"></div>
+    <div><div class="nm">Equipe ${t.nome}${hits[i]===top&&top>0&&unico?'<span class="lead">Na frente</span>':''}</div>
+    <div class="det">${pend} ${pend===1?'meta aberta ainda pendente':'metas abertas ainda pendentes'}</div></div>
+    <div class="score">${hits[i]}<small>de ${itens.length} metas</small></div></div>`}).join('');
+  $('list').innerHTML=itens.map(it=>{
+    const pz=prazoTxt(it,ref);
+    return `<div class="item"><div class="ih"><div><h2>${esc(it.nome)}</h2><div class="meta">Meta de ${fmt(it.meta)} ${esc(it.unidade||'')} por equipe</div></div><span class="tag ${pz.c}">${pz.t}</span></div>
+    ${TEAMS.map(t=>{const v=it.valores?.[t.id]||0,pc=it.meta>0?v/it.meta*100:0,hit=pc>=100;
+      return `<div class="bar"><span class="n">${t.nome}</span><div class="trk" role="img" aria-label="${t.nome}: ${Math.round(pc)}% da meta"><div class="fil" style="width:${Math.min(pc,100)}%;background:var(--${t.id})"></div></div><span class="val ${hit?'hit':''}">${fmt(v)} · ${Math.round(pc)}%${hit?' ✓':''}</span></div>`}).join('')}
+    </div>`}).join('');
+  $('foot').textContent=p.atualizadoEm?'Última atualização: '+new Date(p.atualizadoEm).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'';
+}
+
+function toLocalInput(iso){if(!iso)return'';const d=new Date(iso);const z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
+function itemForm(it,i){
+  return `<div class="eitem"><div class="hd"><label>Item<input data-f="nome" value="${esc(it.nome)}" placeholder="Alimentos"></label><button type="button" class="x" data-rm="1">Remover</button></div>
+  <div class="row"><label>Meta por equipe<input data-f="meta" type="number" min="0" step="any" inputmode="decimal" value="${it.meta??''}"></label>
+  <label>Unidade<input data-f="unidade" value="${esc(it.unidade||'')}" placeholder="kg"></label>
+  <label>Encerra em<input data-f="prazo" type="datetime-local" value="${toLocalInput(it.prazo)}"></label></div>
+  <div class="row">${TEAMS.map(t=>`<label>${t.nome}<input data-t="${t.id}" type="number" min="0" step="any" inputmode="decimal" value="${it.valores?.[t.id]??0}"></label>`).join('')}</div></div>`;
+}
+function openEditor(){
+  editing=true;
+  const primeira=!parciais.length;
+  const base=primeira?SEED:parciais[0];
+  const today=new Date().toISOString().slice(0,10);
+  $('editor').innerHTML=`<h2>Atualizar dados</h2><p class="sub" style="margin:4px 0 0">${primeira?'O formulário já vem com os dados da 1ª parcial. Confira e salve para publicar.':'Os valores da última parcial já vêm preenchidos. Salvar com uma data nova cria uma nova parcial e mantém as anteriores no histórico.'}</p>
+  <div class="grid2"><label>Nome da parcial<input id="eTit" value="${esc(primeira?SEED.titulo:(parciais.length+1)+'ª parcial')}"></label><label>Data da parcial<input id="eData" type="date" value="${primeira?SEED.data:today}"></label></div>
+  <div id="eItens">${(base.itens||[]).map(itemForm).join('')}</div>
+  <button type="button" class="btn" id="eAdd">Adicionar item</button>
+  <div class="actions"><button type="button" class="btn primary" id="eSave">Salvar e publicar</button><button type="button" class="btn" id="eCancel">Cancelar</button><span class="msg" id="eMsg" role="status"></span></div>`;
+  $('editor').hidden=false;render();
+  $('eAdd').onclick=()=>$('eItens').insertAdjacentHTML('beforeend',itemForm({nome:'',meta:'',unidade:'',valores:{}}));
+  $('eItens').onclick=e=>{const b=e.target.closest('[data-rm]');if(b)b.closest('.eitem').remove()};
+  $('eCancel').onclick=closeEditor;$('eSave').onclick=save;
+  $('editor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeEditor(){editing=false;$('editor').hidden=true;$('editor').innerHTML='';render()}
+async function save(){
+  const msg=$('eMsg');msg.className='msg';msg.textContent='';
+  const data=$('eData').value,titulo=$('eTit').value.trim();
+  if(!data){msg.className='msg err';msg.textContent='Informe a data da parcial.';return}
+  const itens=[];let bad='';
+  document.querySelectorAll('#eItens .eitem').forEach(el=>{
+    if(bad)return;
+    const g=f=>el.querySelector(`[data-f="${f}"]`).value;
+    const nome=g('nome').trim(),meta=parseFloat(g('meta'));
+    if(!nome){bad='Todo item precisa de um nome.';return}
+    if(!(meta>0)){bad=`Informe uma meta maior que zero em “${nome}”.`;return}
+    const valores={};TEAMS.forEach(t=>{valores[t.id]=Math.max(0,parseFloat(el.querySelector(`[data-t="${t.id}"]`).value)||0)});
+    const pz=g('prazo');
+    itens.push({nome,meta,unidade:g('unidade').trim(),prazo:pz?new Date(pz).toISOString():null,valores});
+  });
+  if(bad){msg.className='msg err';msg.textContent=bad;return}
+  if(!itens.length){msg.className='msg err';msg.textContent='Adicione pelo menos um item.';return}
+  $('eSave').disabled=true;msg.textContent='Salvando…';
+  try{
+    await setDoc(doc(db,'parciais',data),{titulo:titulo||'Parcial',data,itens,atualizadoEm:new Date().toISOString(),atualizadoPor:auth.currentUser?.email||''});
+    viewId=data;closeEditor();
+  }catch(e){
+    $('eSave').disabled=false;msg.className='msg err';
+    msg.textContent=e?.code==='permission-denied'?'A conta '+(auth.currentUser?.email||'')+' não está na lista da liderança. Fale com o responsável do placar.':'Não foi possível salvar agora. Verifique a conexão e tente de novo.';
+  }
+}
+
+async function entrar(){
+  const m=$('lMsg');m.textContent='';
+  try{await signInWithPopup(auth,new GoogleAuthProvider())}
+  catch(e){
+    if(e?.code==='auth/popup-closed-by-user'||e?.code==='auth/cancelled-popup-request')return;
+    m.textContent=e?.code==='auth/popup-blocked'?'O navegador bloqueou a janela de login. Libere pop-ups para este site e tente de novo.':e?.code==='auth/unauthorized-domain'?'Este endereço ainda não está autorizado no Firebase (Authentication, Configurações, Domínios autorizados).':'Não foi possível entrar agora. Tente de novo.';
+  }
+}
+$('authBtn').onclick=()=>{if(!auth)return;signedIn?signOut(auth).then(closeEditor):entrar()};
+$('sel').onchange=e=>{viewId=e.target.value;render()};
+$('editBtn').onclick=openEditor;
+
+if(firebaseConfig.apiKey==='COLE_AQUI'){render()}
+else{
+  const app=initializeApp(firebaseConfig);
+  db=getFirestore(app);auth=getAuth(app);
+  onAuthStateChanged(auth,u=>{signedIn=!!u;$('lMsg').textContent='';if(!u&&editing)closeEditor();render()});
+  onSnapshot(query(collection(db,'parciais'),orderBy('data','desc')),s=>{
+    loaded=true;parciais=s.docs.map(d=>({id:d.id,...d.data()}));
+    if(viewId&&!parciais.some(p=>p.id===viewId))viewId=null;render();
+  },()=>{$('sub').textContent='Não foi possível carregar os dados agora. Recarregue a página.'});
+  render();
+}
+</script>
+</body>
+</html>
