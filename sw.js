@@ -1,12 +1,13 @@
 // Service worker do app Mutirão de Natal 2026.
 // Estratégia "rede primeiro": sempre busca a versão mais nova e só usa o cache
 // quando não há conexão. Pedidos a outros domínios (Firebase, fontes) passam direto.
-const CACHE = 'mutirao-v1';
+const CACHE = 'mutirao-v2';
 const ARQUIVOS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './logo-mutirao-crop.png',
+  './iasd-logo-dourado.png',
   './pix-icon.png',
   './whatsapp-icon.png',
   './7me-logo.png',
