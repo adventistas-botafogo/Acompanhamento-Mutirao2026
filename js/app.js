@@ -42,7 +42,7 @@ const fmt=n=>Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // lider: a conta logada está na lista da liderança (checado nas regras do Firestore)
 let db=null,auth=null,signedIn=false,lider=false,acessoChecado=false,parciais=[],viewId=null,editing=false,loaded=false;
-let sabado=null,sabLoaded=false,sabEditing=false;
+let sabado=null,sabLoaded=false,sabErro=false,sabEditing=false;
 
 function isClosed(it,ref){return it.prazo&&new Date(it.prazo)<ref}
 function prazoTxt(it,ref){
@@ -152,6 +152,13 @@ function renderSabado(){
   const box=$('sabado');
   if(sabEditing)return;
   const itens=sabado?.itens||[];
+  // Enquanto os itens não chegam, o card já ocupa a 1ª posição (evita o slider pular do Pix para cá)
+  if(!sabLoaded&&!sabErro&&db){
+    box.hidden=false;box.classList.remove('past');box.setAttribute('aria-busy','true');
+    box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${SAB_ICON}</span><div><span class="sab-k">Doações do sábado</span><h3 id="sabT">O que trazer</h3></div></div><ul class="sab-list sk" aria-hidden="true"><li>Carregando</li><li>Carregando</li></ul>`;
+    return;
+  }
+  box.removeAttribute('aria-busy');
   if(!sabLoaded||(!itens.length&&!lider)){box.hidden=true;box.innerHTML='';return}
   box.hidden=false;
   const hoje=isoLocal(new Date()),dt=sabado?.data;
@@ -438,7 +445,7 @@ else{
     if(!lider)sabEditing=false;
     render();
   });
-  onSnapshot(doc(db,'avisos','sabado'),d=>{sabLoaded=true;sabado=d.exists()?d.data():null;renderSabado();setupAvisos()},()=>{sabLoaded=false;renderSabado();setupAvisos()});
+  onSnapshot(doc(db,'avisos','sabado'),d=>{sabLoaded=true;sabado=d.exists()?d.data():null;renderSabado();setupAvisos()},()=>{sabLoaded=false;sabErro=true;renderSabado();setupAvisos()});
   onSnapshot(query(collection(db,'parciais'),orderBy('data','desc')),s=>{
     loaded=true;parciais=s.docs.map(d=>({id:d.id,...d.data()}));
     if(viewId&&!parciais.some(p=>p.id===viewId))viewId=null;render();
