@@ -561,12 +561,12 @@ function renderSeteme(){
 const VAPID='BOR4p6-KsaZAf1QOsncykQ8OVugzL5U9GX7ZTuoqC28TK3FT1_e1IzOAAQuSuykn6pahz4WD6EkcFVqveytoyn0';
 async function registrarAparelho(messaging){
   const reg=await navigator.serviceWorker.ready;
-  const token=await getToken(messaging,{vapidKey:VAPID,serviceWorkerRegistration:reg});
-  if(!token)return false;
-  const agora=new Date().toISOString();
-  try{await setDoc(doc(db,'inscritos',token),{token,plataforma:isIOS?'ios':/Android/.test(navigator.userAgent)?'android':'outro',atualizadoEm:agora})}
-  catch(e){console.warn('Não foi possível salvar a inscrição:',e?.code||e)}
-  return true;
+  let token;
+  try{token=await getToken(messaging,{vapidKey:VAPID,serviceWorkerRegistration:reg})}
+  catch(e){throw Object.assign(new Error('token'),{etapa:'gerar o token',code:e?.code||e?.message})}
+  if(!token)throw Object.assign(new Error('token'),{etapa:'gerar o token',code:'vazio'});
+  try{await setDoc(doc(db,'inscritos',token),{token,plataforma:isIOS?'ios':/Android/.test(navigator.userAgent)?'android':'outro',atualizadoEm:new Date().toISOString()})}
+  catch(e){throw Object.assign(new Error('firestore'),{etapa:'salvar a inscrição',code:e?.code||e?.message})}
 }
 async function iniciarAvisos(app){
   if(!('serviceWorker' in navigator)||!('Notification' in window))return;
@@ -578,24 +578,27 @@ async function iniciarAvisos(app){
     reg.showNotification(p.notification?.title||'Mutirão de Natal 2026',{body:p.notification?.body||'',icon:'icon-192.png',badge:'icon-192.png'});
   });
   const btn=el('pushBtn'),label=btn.querySelector('span'),msg=el('pushMsg');
-  if(Notification.permission==='granted'){registrarAparelho(messaging).catch(()=>{});return}
-  if(Notification.permission==='denied')return;
-  btn.hidden=false;syncInst();
-  btn.onclick=async()=>{
-    btn.disabled=true;label.textContent='Ativando…';msg.textContent='';
+  const mostrar=(txt,rotulo,desab)=>{btn.hidden=false;btn.disabled=!!desab;label.textContent=rotulo;msg.textContent=txt;syncInst()};
+  const falhou=e=>{console.warn(e);mostrar(`Não foi possível ativar os avisos (erro ao ${e?.etapa||'ativar'}: ${e?.code||'desconhecido'}). Tente de novo.`,'Tentar de novo')};
+  const TXT_BLOQ='As notificações deste site estão bloqueadas. No Chrome, toque no ícone ao lado do endereço → Permissões → Notificações → Permitir, e recarregue a página. Se abriu por um link no WhatsApp ou Instagram, abra direto no Chrome.';
+  const bloqueado=comMsg=>{mostrar(comMsg?TXT_BLOQ:'','Avisos bloqueados');btn.onclick=()=>{msg.textContent=msg.textContent?'':TXT_BLOQ;syncInst()}};
+  const ativar=async()=>{
+    mostrar('','Ativando…',true);
     try{
-      const perm=await Notification.requestPermission();
-      if(perm!=='granted'){
-        btn.hidden=true;msg.textContent=perm==='denied'?'Avisos bloqueados. Para ativar depois, libere as notificações deste site nas configurações do navegador.':'';
-        syncInst();return;
-      }
+      const perm=Notification.permission==='granted'?'granted':await Notification.requestPermission();
+      if(perm==='denied')return bloqueado(true);
+      if(perm!=='granted')return mostrar('','Ativar avisos');
       await registrarAparelho(messaging);
-      label.textContent='Avisos ativados ✓';
-    }catch(e){
-      console.warn(e);btn.disabled=false;label.textContent='Ativar avisos';
-      msg.textContent='Não foi possível ativar os avisos agora. Tente de novo.';syncInst();
-    }
+      mostrar('','Avisos ativados ✓',true);
+    }catch(e){falhou(e)}
   };
+  btn.onclick=ativar;
+  if(Notification.permission==='denied')return bloqueado(false);
+  if(Notification.permission==='granted'){
+    try{await registrarAparelho(messaging)}catch(e){falhou(e)}
+    return;
+  }
+  mostrar('','Ativar avisos');
 }
 
 function renderAuth(){
