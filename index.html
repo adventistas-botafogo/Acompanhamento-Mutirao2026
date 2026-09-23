@@ -58,6 +58,10 @@ select{border:1px solid var(--line);background:var(--card);border-radius:10px;pa
 .sab{background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 15%,var(--card)),var(--card) 65%);border:1px solid color-mix(in srgb,var(--gold) 38%,var(--line));border-radius:20px;padding:20px;margin:0;box-shadow:0 14px 34px rgba(0,0,0,.3);min-width:0}
 .sab-hd{display:flex;align-items:center;gap:14px}
 .avisos{margin:0 0 8px}
+.sec{display:flex;align-items:center;gap:14px;margin:0 0 14px;font:700 clamp(21px,5.4vw,26px)/1.15 var(--display);letter-spacing:-0.01em;color:var(--ink)}
+.sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.sec2{margin-top:34px}
+.sec2+.tools{margin-top:0}
 .avisos:not(:has(.sab:not([hidden]))){display:none}
 .avisos .slider{padding-top:4px;padding-bottom:18px}
 .avisos .slider>.sab{flex:0 0 min(440px,84%);scroll-snap-align:center;transition:transform .3s ease,opacity .3s ease}
@@ -205,12 +209,14 @@ label:has(input.chg){color:var(--gold)}
     <p class="church"><a href="https://www.instagram.com/adventistasbotafogo/" target="_blank" rel="noopener">@adventistasbotafogo</a></p>
   </header>
   <div class="avisos">
+    <h2 class="sec">Como participar</h2>
     <div class="slider" id="avSlider" tabindex="0" aria-roledescription="carrossel" aria-label="Avisos e doações">
       <section class="sab" id="sabado" aria-labelledby="sabT" hidden></section>
       <section class="sab pix" id="pix" aria-labelledby="pixT" hidden></section>
     </div>
     <div class="snav" id="avNav"><button type="button" id="avPrev" aria-label="Card anterior">‹</button><span class="cnt" id="avCnt" aria-live="polite"></span><button type="button" id="avNext" aria-label="Próximo card">›</button></div>
   </div>
+  <h2 class="sec sec2">Acompanhe as parciais</h2>
   <div class="tools">
     <select id="sel" aria-label="Escolher parcial" hidden></select>
     <button class="btn" id="editBtn" hidden>Atualizar dados</button>
@@ -255,7 +261,7 @@ const SEED={titulo:"1ª parcial",data:"2026-09-18",itens:[
  {nome:"Fralda geriátrica",meta:50,unidade:"pacotes",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:10,verde:0}},
  {nome:"Kit escolar",meta:50,unidade:"kits",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:0,verde:0}}]};
 
-const TEAMS=[{id:'azul',nome:'Azul',letras:'A–H'},{id:'laranja',nome:'Laranja',letras:'I–P e Y'},{id:'verde',nome:'Verde',letras:'Q–Z (exceto Y)'}];
+const TEAMS=[{id:'azul',nome:'Azul',letras:'A–H',emoji:'🔵'},{id:'laranja',nome:'Laranja',letras:'I–P e Y',emoji:'🟠'},{id:'verde',nome:'Verde',letras:'Q–Z (exceto Y)',emoji:'🟢'}];
 const $=id=>document.getElementById(id);
 const fmt=n=>Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -417,7 +423,7 @@ function waLink(tel,equipe){
   let d=String(tel||'').replace(/\D/g,'');
   if(d.length<10)return'';
   if(d.length<=11)d='55'+d;
-  return 'https://wa.me/'+d+'?text='+encodeURIComponent('Olá! Segue o comprovante do Pix para o Mutirão de Natal 2026. '+(equipe?'Minha equipe é a '+equipe+'.':'Minha equipe é: '));
+  return 'https://wa.me/'+d+'?text='+encodeURIComponent('Olá! Segue o comprovante do Pix para o Mutirão de Natal 2026. '+(equipe?'Minha equipe é a '+equipe:'Minha equipe é: '));
 }
 function renderPix(){
   const box=$('pix');
@@ -434,7 +440,7 @@ function renderPix(){
     const t=TEAMS.find(x=>x.id===id);eq=t?t.id:null;
     box.querySelectorAll('[data-eq]').forEach(b=>{const on=b.dataset.eq===eq;b.setAttribute('aria-checked',on);b.tabIndex=on||(!eq&&b===box.querySelector('[data-eq]'))?0:-1});
     const wa=$('waBtn');
-    if(t){wa.href=waLink(PIX.whats,t.nome);wa.removeAttribute('aria-disabled');$('eqHint').textContent=''}
+    if(t){wa.href=waLink(PIX.whats,t.nome.toUpperCase()+' '+t.emoji);wa.removeAttribute('aria-disabled');$('eqHint').textContent=''}
     else{wa.href=waLink(PIX.whats);wa.setAttribute('aria-disabled','true')}
   };
   setEq(eq);
