@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@600&family=Literata:ital,opsz,wght@1,7..72,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#3A0A10;--card:#4A121A;--ink:#FBEEDB;--mid:#E0C4A6;--muted:#B39279;--line:#5F1E27;--track:#2A060B;
+  --bg:#3A0A10;--card:#4A121A;--ink:#FBEEDB;--mid:#E0C4A6;--muted:#C9AA91;--line:#5F1E27;--edge:#9C6B5C;--track:#2A060B;
   --gold:#F4B321;--azul:#5B9BF0;--laranja:#FF8845;--verde:#3FC46D;--ok:#F4B321;--okbg:#5A3A0C;--warn:#FFD27A;--danger:#FF9A8F;
   --serif:"Literata",Georgia,"Times New Roman",serif;--display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;--body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
@@ -17,6 +17,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
 main{max-width:760px;margin:0 auto;padding:28px 18px 64px}
 .hero{text-align:center;padding:8px 0 0}
@@ -52,7 +53,7 @@ button,select,input{font:inherit;color:inherit}
 .btn:hover{border-color:var(--muted)}
 .btn.primary{background:var(--gold);color:#3A0A10;border-color:var(--gold)}
 .btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;font-size:14px;min-height:40px;max-width:100%}
+select{border:1px solid var(--edge);background:var(--card);border-radius:10px;padding:8px 10px;font-size:14px;min-height:40px;max-width:100%}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 22px}
 .board{display:grid;gap:10px;margin:0 0 30px}
 .sab{background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 15%,var(--card)),var(--card) 65%);border:1px solid color-mix(in srgb,var(--gold) 38%,var(--line));border-radius:20px;padding:20px;margin:0;box-shadow:0 14px 34px rgba(0,0,0,.3);min-width:0}
@@ -65,7 +66,7 @@ select{border:1px solid var(--line);background:var(--card);border-radius:10px;pa
 .avisos:not(:has(.sab:not([hidden]))){display:none}
 .avisos .slider{padding-top:4px;padding-bottom:18px}
 .avisos .slider>.sab{flex:0 0 min(440px,84%);scroll-snap-align:center;transition:transform .3s ease,opacity .3s ease}
-.avisos .slider>.sab:not(.on){opacity:.55;transform:scale(.97)}
+.avisos .slider>.sab:not(.on){opacity:.8;transform:scale(.97)}
 .avisos .slider>#pix{flex:0 0 auto;max-width:min(460px,92%)}
 .avisos .slider.single>.sab{flex:1 1 100%;max-width:none;opacity:1;transform:none}
 .avisos .snav{margin:0 0 4px}
@@ -79,7 +80,7 @@ select{border:1px solid var(--line);background:var(--card);border-radius:10px;pa
 .pix-key code{flex:1 1 auto;text-align:center;font:600 14px/1.3 "JetBrains Mono",ui-monospace,"SF Mono",Consolas,monospace;letter-spacing:-.01em;color:var(--ink);white-space:nowrap}
 .pixcopy{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;min-height:42px}
 .pixcopy svg{width:16px;height:16px;flex:none}
-.pixcopy.ok{background:#32BCAD;border-color:#32BCAD;color:#fff}
+.pixcopy.ok{background:#32BCAD;border-color:#32BCAD;color:#04302A}
 .pix-rcpt{margin-top:auto;padding-top:16px}
 .seteme .sab-ic{background:#fff;border:1px solid #fff}
 .seteme .sab-ic img{display:block;width:34px;height:auto}
@@ -98,7 +99,7 @@ select{border:1px solid var(--line);background:var(--card);border-radius:10px;pa
 .wa[aria-disabled="true"]:hover{border-color:#25D366}
 .eqlbl{margin:0 0 6px;font-size:12px;font-weight:600;color:var(--mid)}
 .eq{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.eq button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;padding:8px 4px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--bg) 55%,transparent);color:var(--ink);font:700 14px/1.1 var(--display);cursor:pointer;transition:background .2s,border-color .2s}
+.eq button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;padding:8px 4px;border:1px solid var(--edge);border-radius:12px;background:color-mix(in srgb,var(--bg) 55%,transparent);color:var(--ink);font:700 14px/1.1 var(--display);cursor:pointer;transition:background .2s,border-color .2s}
 .eq button i{display:block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-bottom:2px}
 .eq button small{font:500 11px/1 var(--body);color:var(--muted)}
 .eq button:hover{border-color:var(--c)}
@@ -111,7 +112,8 @@ select{border:1px solid var(--line);background:var(--card);border-radius:10px;pa
 .sab-ic svg{width:24px;height:24px}
 .sab-k{display:block;font:600 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
 .sab.past .sab-k{color:var(--muted)}
-.sab h2{font:700 22px/1.1 var(--display)}
+.sab h3{font:700 22px/1.1 var(--display);margin:0}
+.item h3{font:700 20px/1.2 var(--display);margin:0}
 .sab-hd .btn{margin-left:auto;flex:none}
 .sab-list{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
 .sab-list li{display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--bg) 55%,transparent);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600;font-size:15px;line-height:1.3}
@@ -120,7 +122,7 @@ select{border:1px solid var(--line);background:var(--card);border-radius:10px;pa
 .sab-empty{margin:14px 0 0;font-size:14px;color:var(--mid)}
 .sab form{margin-top:16px}
 .sab .grid2{margin:0 0 12px}
-textarea{display:block;width:100%;margin-top:4px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font:inherit;font-size:15px;line-height:1.5;min-height:150px;resize:vertical;color:inherit}
+textarea{display:block;width:100%;margin-top:4px;border:1px solid var(--edge);background:var(--bg);border-radius:8px;padding:8px 10px;font:inherit;font-size:15px;line-height:1.5;min-height:150px;resize:vertical;color:inherit}
 textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .hint{display:block;font-size:12px;color:var(--muted);margin-top:4px;font-weight:400}
 .team{display:grid;grid-template-columns:10px 1fr auto;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px 14px 0;overflow:hidden}
@@ -134,13 +136,13 @@ textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .lead{display:inline-block;white-space:nowrap;font:600 11px/1 var(--body);background:var(--gold);color:#3A0A10;border-radius:99px;padding:4px 8px;margin-left:8px;vertical-align:3px}
 .chips{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 18px;margin:0 -18px 10px;background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .chips::-webkit-scrollbar,.slider::-webkit-scrollbar{display:none}
-.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 14px;font:600 13px/1 var(--body);color:var(--mid);cursor:pointer;min-height:36px;transition:background .2s,color .2s,border-color .2s}
+.chip{flex:none;border:1px solid var(--edge);background:var(--card);border-radius:99px;padding:7px 14px;font:600 13px/1 var(--body);color:var(--mid);cursor:pointer;min-height:36px;transition:background .2s,color .2s,border-color .2s}
 .chip:hover{border-color:var(--muted);color:var(--ink)}
 .chip[aria-current="true"]{background:var(--gold);border-color:var(--gold);color:#3A0A10}
 .chip:focus-visible,.snav button:focus-visible,.slider:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .slider{position:relative;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:8px 18px 26px;margin:0 -18px;overscroll-behavior-x:contain}
 .item{flex:0 0 calc(100% - 28px);scroll-snap-align:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 20px;box-shadow:0 14px 34px rgba(0,0,0,.38),0 2px 6px rgba(0,0,0,.25);transition:transform .3s ease,opacity .3s ease}
-.item:not(.on){opacity:.55;transform:scale(.97)}
+.item:not(.on){opacity:.8;transform:scale(.97)}
 .snav{display:flex;align-items:center;justify-content:center;gap:14px;margin:4px 0 0}
 .snav button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;line-height:1;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.3)}
 .snav button:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
@@ -177,7 +179,7 @@ textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .editor h2{margin-bottom:4px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}
 label{display:block;font-size:13px;color:var(--mid);font-weight:500}
-input{display:block;width:100%;margin-top:4px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:15px;min-height:40px}
+input{display:block;width:100%;margin-top:4px;border:1px solid var(--edge);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:15px;min-height:40px}
 .eitem{position:relative;border-top:1px solid var(--line);padding:14px 0}
 .eitem.chg::before,.eitem.new::before{content:"";position:absolute;left:-11px;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--gold)}
 .eitem.new::before{background:var(--verde)}
@@ -218,11 +220,11 @@ label:has(input.chg){color:var(--gold)}
 <main>
   <header class="hero">
     <div class="brand"><img src="logo-mutirao-crop.png" alt="" width="561" height="609"><h1><span class="ln">Mutirão de Natal</span> <span class="ln yr">2026</span></h1></div>
-    <p class="church"><a href="https://www.instagram.com/adventistasbotafogo/" target="_blank" rel="noopener">@adventistasbotafogo</a></p>
+    <p class="church"><a href="https://www.instagram.com/adventistasbotafogo/" target="_blank" rel="noopener">@adventistasbotafogo<span class="sr"> (abre em nova aba)</span></a></p>
   </header>
   <div class="avisos">
     <h2 class="sec">Como participar</h2>
-    <div class="slider" id="avSlider" tabindex="0" aria-roledescription="carrossel" aria-label="Avisos e doações">
+    <div class="slider" id="avSlider" tabindex="0" role="region" aria-roledescription="carrossel" aria-label="Avisos e doações">
       <section class="sab" id="sabado" aria-labelledby="sabT" hidden></section>
       <section class="sab pix" id="pix" aria-labelledby="pixT" hidden></section>
       <section class="sab pix seteme" id="seteme" aria-labelledby="setemeT" hidden></section>
@@ -238,7 +240,7 @@ label:has(input.chg){color:var(--gold)}
   <section id="editor" class="editor" hidden></section>
   <section class="board" id="board" aria-label="Metas batidas por equipe"></section>
   <section id="list" aria-label="Progresso por item"></section>
-  <div class="placar"><p class="sub" id="sub" role="status">Carregando dados…</p></div>
+  <div class="placar"><p class="sub" id="sub">Carregando dados…</p></div>
   <blockquote class="verse">
     <p><sup>32</sup>Da multidão dos que creram era um o coração e a alma. Ninguém considerava exclusivamente sua nem uma das coisas que possuía; tudo, porém, lhes era comum. <sup>33</sup>Com grande poder, os apóstolos davam testemunho da ressurreição do Senhor Jesus, e em todos eles havia abundante graça. <sup>34</sup>Não havia nenhum necessitado entre eles, porque os que possuíam terras ou casas, vendendo-as, traziam os valores correspondentes <sup>35</sup>e os depositavam aos pés dos apóstolos; então se distribuía a cada um conforme a sua necessidade.</p>
     <cite>Atos 4:32–35</cite>
@@ -321,9 +323,9 @@ function render(){
     <div class="score">${hits[i]}<small>de ${itens.length} metas</small></div></div>`}).join('');
   $('list').innerHTML=`<div class="legend"><span><i style="background:var(--mid)"></i>até a meta</span><span><i style="background:repeating-linear-gradient(135deg,var(--mid) 0 5px,var(--track) 5px 9px)"></i>acima da meta</span><span>» passou de 2× a meta</span></div>
   <nav class="chips" id="chips" aria-label="Itens">${itens.map((it,i)=>`<button type="button" class="chip" data-i="${i}">${esc(it.nome)}</button>`).join('')}</nav>
-  <div class="slider" id="slider" tabindex="0" aria-roledescription="carrossel" aria-label="Itens da arrecadação">`+itens.map((it,i)=>{
+  <div class="slider" id="slider" tabindex="0" role="region" aria-roledescription="carrossel" aria-label="Itens da arrecadação">`+itens.map((it,i)=>{
     const pz=prazoTxt(it,ref);
-    return `<div class="item" role="group" aria-roledescription="slide" aria-label="${i+1} de ${itens.length}: ${esc(it.nome)}"><div class="ih"><div><h2>${esc(it.nome)}</h2><div class="meta">Meta: <b>${fmt(it.meta)}</b>${esc(it.unidade||'')} por equipe</div></div><span class="tag ${pz.c}">${pz.t}</span></div>
+    return `<div class="item" role="group" aria-roledescription="slide" aria-label="${i+1} de ${itens.length}: ${esc(it.nome)}"><div class="ih"><div><h3>${esc(it.nome)}</h3><div class="meta">Meta: <b>${fmt(it.meta)}</b>${esc(it.unidade||'')} por equipe</div></div><span class="tag ${pz.c}">${pz.t}</span></div>
     <div class="scale" aria-hidden="true"><span></span><div class="sc"><span style="left:50%;transform:translateX(-50%)">meta</span><span style="right:0">2×</span></div><span></span></div>
     ${TEAMS.map(t=>{const v=it.valores?.[t.id]||0,pc=it.meta>0?v/it.meta*100:0,hit=pc>=100;
       const base=Math.min(pc,100)/2,extra=hit?(Math.min(pc,200)-100)/2:0;
@@ -396,8 +398,8 @@ function renderSabado(){
   const dd=dt?new Date(dt+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}):'';
   const k=!dt?'Doações do sábado':past?'Sábado passado · '+dd:dt===proximoSabado()?'Neste sábado · '+dd:'Sábado · '+dd;
   box.classList.toggle('past',past);
-  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${SAB_ICON}</span><div><span class="sab-k">${k}</span><h2 id="sabT">O que trazer</h2></div>${signedIn?`<button type="button" class="btn" id="sabEdit">${itens.length?'Editar':'Definir itens'}</button>`:''}</div>
-  ${itens.length?`<ul class="sab-list">${itens.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:'<p class="sab-empty">Nenhum item definido para o sábado.</p>'}
+  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${SAB_ICON}</span><div><span class="sab-k">${k}</span><h3 id="sabT">O que trazer</h3></div>${signedIn?`<button type="button" class="btn" id="sabEdit">${itens.length?'Editar':'Definir itens'}</button>`:''}</div>
+  ${itens.length?`<ul class="sab-list" role="list">${itens.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:'<p class="sab-empty">Nenhum item definido para o sábado.</p>'}
   ${sabado?.obs?`<p class="sab-obs">${esc(sabado.obs)}</p>`:''}`;
   if(signedIn)$('sabEdit').onclick=editarSabado;
 }
@@ -406,7 +408,7 @@ function editarSabado(){
   const box=$('sabado'),hoje=isoLocal(new Date());
   const data=sabado?.data&&sabado.data>=hoje?sabado.data:proximoSabado();
   box.classList.remove('past');
-  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${SAB_ICON}</span><div><span class="sab-k">Área restrita</span><h2 id="sabT">Itens do sábado</h2></div></div>
+  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${SAB_ICON}</span><div><span class="sab-k">Área restrita</span><h3 id="sabT">Itens do sábado</h3></div></div>
   <form id="sabForm" novalidate><div class="grid2"><label>Data do sábado<input id="sabData" type="date" value="${data}"></label><label>Observação (opcional)<input id="sabObs" value="${esc(sabado?.obs||'')}" placeholder="Entregar na recepção até 10h"></label></div>
   <label>Itens<textarea id="sabItens" placeholder="Arroz (5 kg)&#10;Feijão&#10;Óleo">${esc((sabado?.itens||[]).join('\n'))}</textarea><span class="hint">Um item por linha.</span></label>
   <div class="actions"><button type="submit" class="btn primary" id="sabSave">Salvar e publicar</button><button type="button" class="btn" id="sabCancel">Cancelar</button><span class="msg" id="sabMsg" role="status"></span></div></form>`;
@@ -430,6 +432,7 @@ function editarSabado(){
 }
 
 const PIX={chave:'secretaria.iasdbotafogo@gmail.com',whats:'(21) 96900-7346'};
+const NOVA_ABA='<span class="sr"> (abre em nova aba)</span>';
 const COPY_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
 const PIX_ICON='<img src="pix-icon.png" alt="" width="28" height="28">';
 const WA_ICON='<img src="whatsapp-icon.png" alt="" width="24" height="24">';
@@ -446,7 +449,7 @@ function comprovanteHTML(px){
   return `<div class="pix-rcpt"><div class="eqlbl" id="${px}EqL">Qual é a sua equipe?</div>
   <div class="eq" role="radiogroup" aria-labelledby="${px}EqL">${TEAMS.map(t=>`<button type="button" role="radio" aria-checked="false" data-eq="${t.id}" style="--c:var(--${t.id})"><i></i>${t.nome}<small>${t.letras}</small></button>`).join('')}</div>
   <p class="eqhint" id="${px}EqHint" role="status"></p>
-  <a class="btn wa" id="${px}Wa" target="_blank" rel="noopener">${WA_ICON}Enviar comprovante no WhatsApp</a></div>`;
+  <a class="btn wa" id="${px}Wa" target="_blank" rel="noopener">${WA_ICON}Enviar comprovante no WhatsApp${NOVA_ABA}</a></div>`;
 }
 function ligarComprovante(box,px,meio){
   const grp=box.querySelector('.eq'),wa=$(px+'Wa'),hint=$(px+'EqHint');
@@ -470,22 +473,22 @@ function renderPix(){
   const box=$('pix');
   if(box.innerHTML)return;
   box.hidden=false;
-  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${PIX_ICON}</span><div><span class="sab-k">Doações via Pix</span><h2 id="pixT">Contribua</h2></div></div>
+  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${PIX_ICON}</span><div><span class="sab-k">Doações via Pix</span><h3 id="pixT">Contribua</h3></div></div>
   <div class="pix-key"><code id="pixKey">${esc(PIX.chave)}</code></div>
-  <button type="button" class="btn primary pixcopy" id="pixCopy">${COPY_ICON}<span>Copiar chave Pix</span></button>
+  <button type="button" class="btn primary pixcopy" id="pixCopy">${COPY_ICON}<span>Copiar chave Pix</span></button><span class="sr" role="status" id="pixSt"></span>
   ${comprovanteHTML('pix')}`;
   ligarComprovante(box,'pix','do Pix');
   $('pixCopy').onclick=async()=>{
     const b=$('pixCopy');
     try{await navigator.clipboard.writeText(PIX.chave)}
     catch{const r=document.createRange();r.selectNodeContents($('pixKey'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);try{document.execCommand('copy')}catch{}}
-    const t=b.querySelector('span');t.textContent='Chave copiada ✓';b.classList.add('ok');
+    const t=b.querySelector('span');t.textContent='Chave copiada ✓';b.classList.add('ok');$('pixSt').textContent='';setTimeout(()=>$('pixSt').textContent='Chave Pix copiada',50);
     clearTimeout(b.t);b.t=setTimeout(()=>{t.textContent='Copiar chave Pix';b.classList.remove('ok')},2200);
   };
 }
 const SETEME={
   // giving.7me.app é um Universal Link / App Link: abre o app se estiver instalado, senão o site
-  site:'https://giving.7me.app/guest-donation/church-selection',
+  site:'https://giving.7me.app/guest-donation/church/58caf077-0310-4b5d-8fc6-309964305664',
   ios:'https://apps.apple.com/br/app/7me/id1344775660',
   android:'https://play.google.com/store/apps/details?id=com.iatec.acms.me',
   caminho:['Dizimar e ofertar','Ofertas para a minha igreja','Mutirão de Natal']
@@ -496,10 +499,10 @@ function renderSeteme(){
   box.hidden=false;
   const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),android=/Android/.test(ua);
   const loja=ios?SETEME.ios:android?SETEME.android:'';
-  box.innerHTML=`<div class="sab-hd"><span class="sab-ic"><img src="7me-logo.png" alt="" width="139" height="72"></span><div><span class="sab-k">Doações via 7me</span><h2 id="setemeT">Oferte pelo app</h2></div></div>
-  <ol class="steps">${SETEME.caminho.map(c=>`<li>${esc(c)}</li>`).join('')}</ol>
-  <a class="btn primary app7" href="${SETEME.site}" target="_blank" rel="noopener">Abrir o 7me</a>
-  <span class="alt7">${loja?`Ainda não tem o app? <a href="${loja}" target="_blank" rel="noopener">Baixar o 7me</a>`:`Baixe o app: <a href="${SETEME.ios}" target="_blank" rel="noopener">iPhone</a> · <a href="${SETEME.android}" target="_blank" rel="noopener">Android</a>`}</span>
+  box.innerHTML=`<div class="sab-hd"><span class="sab-ic"><img src="7me-logo.png" alt="" width="139" height="72"></span><div><span class="sab-k">Doações via 7me</span><h3 id="setemeT">Oferte pelo app</h3></div></div>
+  <ol class="steps" role="list">${SETEME.caminho.map(c=>`<li>${esc(c)}</li>`).join('')}</ol>
+  <a class="btn primary app7" href="${SETEME.site}" target="_blank" rel="noopener">Abrir o 7me${NOVA_ABA}</a>
+  <span class="alt7">${loja?`Ainda não tem o app? <a href="${loja}" target="_blank" rel="noopener">Baixar o 7me${NOVA_ABA}</a>`:`Baixe o app: <a href="${SETEME.ios}" target="_blank" rel="noopener">iPhone${NOVA_ABA}</a> · <a href="${SETEME.android}" target="_blank" rel="noopener">Android${NOVA_ABA}</a>`}</span>
   ${comprovanteHTML('seteme')}`;
   ligarComprovante(box,'seteme','da oferta pelo 7me');
 }
