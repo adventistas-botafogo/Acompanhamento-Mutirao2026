@@ -1,16 +1,22 @@
 # Mutirão de Natal 2026 · Placar da arrecadação
 
-Placar online da arrecadação do Mutirão de Natal 2026 da Igreja Adventista de Botafogo ([@adventistasbotafogo](https://www.instagram.com/adventistasbotafogo/)).
+Placar online e app do Mutirão de Natal 2026 da Igreja Adventista de Botafogo ([@adventistasbotafogo](https://www.instagram.com/adventistasbotafogo/)).
 
 **Acesse:** https://adventistas-botafogo.github.io/Acompanhamento-Mutirao2026/
 
-## O que o placar mostra
+## O que o app mostra
 
+### Como participar
+- **O que trazer:** os itens de doação do próximo sábado, atualizados pela liderança toda semana.
+- **Doações via Pix:** a chave Pix com botão de copiar, e o envio do comprovante pelo WhatsApp com a equipe já preenchida na mensagem.
+- **Doações via 7me:** o caminho dentro do app 7me e um botão que abre o app, se estiver instalado, ou o site de doação da igreja.
+
+### Acompanhe as parciais
 - **Placar das equipes:** quantas metas cada equipe já bateu e quantas metas abertas ainda faltam.
-- **Progresso por item** (Alimentos, Cobertores, Roupas etc.): a meta por equipe, quanto cada equipe arrecadou, a porcentagem da meta e o prazo de cada item.
+- **Progresso por item** (Alimentos, Roupas, Calçados etc.): a meta por equipe, quanto cada equipe arrecadou, a porcentagem da meta e o prazo de cada item.
 - **Histórico de parciais:** cada atualização é salva como uma parcial, e as anteriores podem ser consultadas no seletor.
 
-A página atualiza sozinha. Quando a liderança publica uma nova parcial, quem estiver com o placar aberto vê os números novos sem recarregar.
+A página atualiza sozinha. Quando a liderança publica uma nova parcial ou novos itens do sábado, quem estiver com o app aberto vê a mudança sem recarregar.
 
 ### Equipes
 
@@ -22,24 +28,63 @@ A equipe de cada membro é definida pela inicial do nome:
 | Laranja | I a P, e Y |
 | Verde | Q a Z (exceto Y) |
 
+## App instalável e avisos
+
+O site pode ser instalado como app (PWA), pelo botão **Instalar app** no topo:
+- **Android:** o botão instala direto.
+- **iPhone:** o botão mostra como usar *Compartilhar → Adicionar à Tela de Início* no Safari.
+
+O botão **Ativar avisos** inscreve o aparelho para receber notificações. No iPhone, esse botão só aparece dentro do app instalado.
+
+Os avisos são enviados pelo console do Firebase, em **Messaging**. Há campanhas recorrentes semanais programadas:
+
+| Quando | Aviso |
+|---|---|
+| Domingo | Itens do próximo sábado |
+| Quinta | Lembrete para comprar os itens |
+| Sábado de manhã | Lembrete de levar as doações |
+
+A lista do sábado precisa estar atualizada no app **antes do aviso de domingo**.
+
 ## Como atualizar os dados (liderança)
 
-1. Abra o placar e, no fim da página, em **Área restrita**, toque em **Entrar com Google**.
-2. Toque em **Atualizar dados**. O formulário vem preenchido com os valores da última parcial.
-3. Ajuste os valores de cada equipe. Os campos alterados ficam em dourado e mostram quanto mudaram em relação à parcial anterior.
-4. Confira o nome e a data da parcial e toque em **Salvar e publicar**.
+1. Abra o app e, no fim da página, em **Área restrita**, toque em **Entrar com Google**.
+2. **Parciais:** toque em **Atualizar dados**. O formulário vem preenchido com os valores da última parcial, e os campos alterados ficam em dourado, mostrando quanto mudaram. Confira o nome e a data e toque em **Salvar e publicar**.
+3. **Itens do sábado:** no card **O que trazer**, toque em **Editar**, escreva um item por linha e salve.
 
-Se você salvar com uma data nova, o placar cria uma nova parcial e mantém as anteriores. Se salvar com a data de uma parcial que já existe, os dados dela são substituídos.
+Se você salvar uma parcial com uma data nova, o app cria uma nova parcial e mantém as anteriores. Se salvar com a data de uma parcial que já existe, os dados dela são substituídos.
 
-Só contas Google autorizadas conseguem salvar. Se aparecer a mensagem de que sua conta não está na lista da liderança, fale com o responsável pelo placar.
+Só contas Google autorizadas conseguem salvar. Se aparecer a mensagem de que sua conta não tem permissão, fale com o responsável pelo placar.
 
-## Como funciona
+## Estrutura do projeto
 
-O projeto inteiro é um único arquivo, o `index.html`, publicado pelo GitHub Pages. Não há etapa de build nem dependências para instalar.
+```
+index.html              Estrutura da página
+css/estilo.css          Visual (cores, layout, responsivo)
+js/app.js               Lógica: Firebase, placar, sliders, cards, login, avisos
+sw.js                   Service worker: cache offline e recebimento de avisos
+manifest.webmanifest    Dados do app instalável (nome, cores, ícones)
+img/logos/              Logos usados na página (Mutirão, IASD, Pix, WhatsApp, 7me)
+img/icones/             Ícones do app instalado
+```
 
-- **Dados:** ficam no Firebase Firestore, projeto `acompanhamento-mutirao2026`, na coleção `parciais`. Cada documento é uma parcial, e o ID do documento é a data no formato `AAAA-MM-DD`.
+O `sw.js` e o `manifest.webmanifest` ficam na raiz de propósito: o service worker só controla as páginas da pasta onde está.
+
+Não há etapa de build nem dependências para instalar. O GitHub Pages publica os arquivos como estão.
+
+## Firebase
+
+Projeto `acompanhamento-mutirao2026`.
+
+| Coleção | Conteúdo | Quem escreve |
+|---|---|---|
+| `parciais` | Uma parcial por documento, com ID no formato `AAAA-MM-DD` | Liderança |
+| `avisos` | Documento `sabado`, com os itens do próximo sábado | Liderança |
+| `inscritos` | Um documento por aparelho inscrito nos avisos. O ID é o token do Firebase Cloud Messaging | O próprio aparelho, ao ativar os avisos |
+
 - **Login:** Firebase Authentication com Google.
-- **Permissões:** as regras de segurança do Firestore definem quem pode escrever. Essas regras ficam configuradas no console do Firebase e não estão neste repositório.
+- **Avisos:** Firebase Cloud Messaging. A chave Web Push (VAPID) está em `js/app.js`.
+- **Permissões:** as regras de segurança do Firestore ficam no console do Firebase e não estão neste repositório. A lista de e-mails da liderança fica na função `ehLideranca()`.
 
 ### Estrutura de uma parcial
 
@@ -61,17 +106,13 @@ O projeto inteiro é um único arquivo, o `index.html`, publicado pelo GitHub Pa
 }
 ```
 
-## Arquivos
-
-| Arquivo | Descrição |
-|---|---|
-| `index.html` | Página do placar, com o HTML, o CSS e o JavaScript |
-| `logo-mutirao-crop.png` | Logo usado na página, recortado |
-| `logo-mutirao.png` | Logo original |
-
 ## Manutenção
 
-- **Testar localmente:** abra o `index.html` no navegador. Para o login com Google funcionar fora do GitHub Pages, sirva a pasta por um servidor local (por exemplo `python -m http.server`) e acesse por `http://localhost:8000`.
+- **Testar localmente:** sirva a pasta com um servidor local, por exemplo `python -m http.server`, e acesse `http://localhost:8000`. Abrir o `index.html` direto do disco não funciona, porque o navegador bloqueia o `js/app.js` fora de um servidor.
 - **Publicar:** qualquer push para a branch `main` atualiza o site em um ou dois minutos.
+- **Arquivo novo ou renomeado:** se ele precisar funcionar sem internet, adicione-o à lista `ARQUIVOS` do `sw.js` e aumente a versão em `CACHE` (por exemplo, de `mutirao-v3` para `mutirao-v4`).
 - **Mudar de endereço** (domínio próprio ou outro repositório): adicione o novo domínio no console do Firebase, em *Authentication → Settings → Authorized domains*. Sem isso, o login não funciona no endereço novo.
-- **Mudar as equipes ou as iniciais:** edite a constante `TEAMS` no `index.html`.
+- **Configurações que ficam em `js/app.js`:**
+  - `TEAMS`: equipes, iniciais e emoji usado na mensagem do WhatsApp.
+  - `PIX`: chave Pix e número do WhatsApp para comprovantes.
+  - `SETEME`: link de doação da igreja no 7me, links das lojas e caminho dentro do app.
