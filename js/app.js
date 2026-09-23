@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
@@ -12,19 +12,6 @@ const firebaseConfig = {
   messagingSenderId: "922912359615",
   appId: "1:922912359615:web:827762540abba6c52f720a"
 };
-
-// Usado só para preencher o formulário na primeira vez, quando o banco ainda está vazio
-const SEED={titulo:"1ª parcial",data:"2026-09-18",itens:[
- {nome:"Alimentos",meta:3000,unidade:"kg",prazo:"2026-12-05T21:00:00.000Z",valores:{azul:1883.8,laranja:3434.8,verde:963.8}},
- {nome:"Cobertores",meta:80,unidade:"unidades",prazo:"2026-06-21T02:59:00.000Z",valores:{azul:65,laranja:142,verde:79}},
- {nome:"Roupas",meta:200,unidade:"peças",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:1078,laranja:887,verde:701}},
- {nome:"Calçados",meta:100,unidade:"pares",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:36,laranja:46,verde:10}},
- {nome:"Brinquedos",meta:150,unidade:"unidades",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:0,verde:6}},
- {nome:"Escovas de dente",meta:50,unidade:"unidades",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:30,verde:0}},
- {nome:"Pasta de dente",meta:100,unidade:"unidades",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:2,laranja:20,verde:0}},
- {nome:"Sabonete",meta:100,unidade:"unidades",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:46,laranja:113,verde:62}},
- {nome:"Fralda geriátrica",meta:50,unidade:"pacotes",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:10,verde:0}},
- {nome:"Kit escolar",meta:50,unidade:"kits",prazo:"2026-12-05T15:00:00.000Z",valores:{azul:0,laranja:0,verde:0}}]};
 
 // App instalável (PWA) e avisos por notificação
 const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -53,7 +40,8 @@ const TEAMS=[{id:'azul',nome:'Azul',letras:'A–H',emoji:'🔵'},{id:'laranja',n
 const $=id=>document.getElementById(id);
 const fmt=n=>Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let db=null,auth=null,signedIn=false,parciais=[],viewId=null,editing=false,loaded=false;
+// lider: a conta logada está na lista da liderança (checado nas regras do Firestore)
+let db=null,auth=null,signedIn=false,lider=false,acessoChecado=false,parciais=[],viewId=null,editing=false,loaded=false;
 let sabado=null,sabLoaded=false,sabEditing=false;
 
 function isClosed(it,ref){return it.prazo&&new Date(it.prazo)<ref}
@@ -70,12 +58,12 @@ const current=()=>parciais.find(p=>p.id===viewId)||parciais[0];
 
 function render(){
   const p=current();
-  $('editBtn').hidden=!signedIn||editing;
+  $('editBtn').hidden=!lider||editing;
   renderAuth();renderSabado();renderPix();renderSeteme();setupAvisos();
   if(!p){
     $('sub').textContent=!db?'Configuração do Firebase pendente.':loaded?'Nenhuma parcial publicada ainda.':'Carregando dados…';
     $('board').innerHTML='';$('foot').textContent='';
-    $('list').innerHTML=signedIn&&loaded?'<div class="empty">Toque em “Atualizar dados” para lançar a primeira parcial.</div>':'';
+    $('list').innerHTML=lider&&loaded?'<div class="empty">Toque em “Atualizar dados” para lançar a primeira parcial.</div>':'';
     $('sel').hidden=true;return;
   }
   const ref=new Date();
@@ -164,17 +152,17 @@ function renderSabado(){
   const box=$('sabado');
   if(sabEditing)return;
   const itens=sabado?.itens||[];
-  if(!sabLoaded||(!itens.length&&!signedIn)){box.hidden=true;box.innerHTML='';return}
+  if(!sabLoaded||(!itens.length&&!lider)){box.hidden=true;box.innerHTML='';return}
   box.hidden=false;
   const hoje=isoLocal(new Date()),dt=sabado?.data;
   const past=!!dt&&dt<hoje;
   const dd=dt?new Date(dt+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}):'';
   const k=!dt?'Doações do sábado':past?'Sábado passado · '+dd:dt===proximoSabado()?'Neste sábado · '+dd:'Sábado · '+dd;
   box.classList.toggle('past',past);
-  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${SAB_ICON}</span><div><span class="sab-k">${k}</span><h3 id="sabT">O que trazer</h3></div>${signedIn?`<button type="button" class="btn" id="sabEdit">${itens.length?'Editar':'Definir itens'}</button>`:''}</div>
+  box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${SAB_ICON}</span><div><span class="sab-k">${k}</span><h3 id="sabT">O que trazer</h3></div>${lider?`<button type="button" class="btn" id="sabEdit">${itens.length?'Editar':'Definir itens'}</button>`:''}</div>
   ${itens.length?`<ul class="sab-list" role="list">${itens.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:'<p class="sab-empty">Nenhum item definido para o sábado.</p>'}
   ${sabado?.obs?`<p class="sab-obs">${esc(sabado.obs)}</p>`:''}`;
-  if(signedIn)$('sabEdit').onclick=editarSabado;
+  if(lider)$('sabEdit').onclick=editarSabado;
 }
 function editarSabado(){
   sabEditing=true;
@@ -204,8 +192,11 @@ function editarSabado(){
   $('sabItens').focus();
 }
 
-const PIX={chave:'secretaria.iasdbotafogo@gmail.com',whats:'(21) 96900-7346'};
+// Recebedor exatamente como o banco mostra ao digitar a chave (o banco corta o nome)
+const PIX={chave:'secretaria.iasdbotafogo@gmail.com',whats:'(21) 96900-7346',
+  recebedor:'ASSOC RIO DE JANEIRO DA IGREJA ADVENTISTA DO SETIMO DI',cnpj:'30.097.554/0002-09',banco:'Bradesco'};
 const NOVA_ABA='<span class="sr"> (abre em nova aba)</span>';
+const SHIELD_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>';
 const COPY_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
 const PIX_ICON='<img src="img/logos/pix.png" alt="" width="28" height="28">';
 const WA_ICON='<img src="img/logos/whatsapp.png" alt="" width="24" height="24">';
@@ -247,7 +238,11 @@ function renderPix(){
   if(box.innerHTML)return;
   box.hidden=false;
   box.innerHTML=`<div class="sab-hd"><span class="sab-ic">${PIX_ICON}</span><div><span class="sab-k">Doações via Pix</span><h3 id="pixT">Contribua</h3></div></div>
-  <div class="pix-key"><code id="pixKey">${esc(PIX.chave)}</code></div>
+  <div class="pix-box">
+    <span class="pix-lbl">Chave Pix (e-mail)</span>
+    <code id="pixKey">${esc(PIX.chave)}</code>
+    <div class="pix-rec"><span class="pix-lbl">${SHIELD_ICON}Recebedor · confira no app do banco</span><b>${esc(PIX.recebedor)}</b><small>CNPJ ${esc(PIX.cnpj)} · ${esc(PIX.banco)}</small></div>
+  </div>
   <button type="button" class="btn primary pixcopy" id="pixCopy">${COPY_ICON}<span>Copiar chave Pix</span></button><span class="sr" role="status" id="pixSt"></span>
   ${comprovanteHTML('pix')}`;
   ligarComprovante(box,'pix','do Pix');
@@ -328,7 +323,7 @@ function renderAuth(){
   const u=auth.currentUser;
   if(signedIn&&u){
     const nm=u.displayName||u.email||'';
-    box.innerHTML=`<span class="lbl">Área restrita</span><div class="who"><span class="av">${u.photoURL?`<img src="${esc(u.photoURL)}" alt="" referrerpolicy="no-referrer">`:esc(nm.charAt(0).toUpperCase())}</span><span class="em">${esc(u.displayName||'Conectado')}<small>${esc(u.email||'')}</small></span><button type="button" class="obtn" id="gOut">Sair</button></div>`;
+    box.innerHTML=`<span class="lbl">Área restrita</span><div class="who"><span class="av">${u.photoURL?`<img src="${esc(u.photoURL)}" alt="" referrerpolicy="no-referrer">`:esc(nm.charAt(0).toUpperCase())}</span><span class="em">${esc(u.displayName||'Conectado')}${acessoChecado?`<span class="role${lider?' dev':''}">${lider?'Login dev':'Login padrão'}</span>`:''}<small>${esc(u.email||'')}</small></span><button type="button" class="obtn" id="gOut">Sair</button></div>`;
   }else{
     box.innerHTML=`<span class="lbl">Área restrita</span><button type="button" class="gbtn" id="gIn">${GLOGO}Entrar com Google</button>`;
   }
@@ -345,10 +340,10 @@ function itemForm(it,i,isNew){
 function openEditor(){
   editing=true;
   const primeira=!parciais.length;
-  const base=primeira?SEED:parciais[0];
-  const today=new Date().toISOString().slice(0,10);
-  $('editor').innerHTML=`<h2>Atualizar dados</h2><p class="sub" style="margin:4px 0 0">${primeira?'O formulário já vem com os dados da 1ª parcial. Confira e salve para publicar.':'Os valores da última parcial já vêm preenchidos. Salvar com uma data nova cria uma nova parcial e mantém as anteriores no histórico.'}</p>
-  <div class="grid2"><label>Nome da parcial<input id="eTit" value="${esc(primeira?SEED.titulo:(parciais.length+1)+'ª parcial')}"></label><label>Data da parcial<input id="eData" type="date" value="${primeira?SEED.data:today}"></label></div>
+  const base=primeira?{itens:[]}:parciais[0];
+  const today=isoLocal(new Date());
+  $('editor').innerHTML=`<h2>Atualizar dados</h2><p class="sub" style="margin:4px 0 0">${primeira?'Adicione os itens da campanha com as metas e os valores de cada equipe, e salve para publicar a 1ª parcial.':'Os valores da última parcial já vêm preenchidos. Salvar com uma data nova cria uma nova parcial e mantém as anteriores no histórico.'}</p>
+  <div class="grid2"><label>Nome da parcial<input id="eTit" value="${esc((parciais.length+1)+'ª parcial')}"></label><label>Data da parcial<input id="eData" type="date" value="${today}"></label></div>
   <div id="eItens">${(base.itens||[]).map(itemForm).join('')}</div>
   <button type="button" class="btn" id="eAdd">Adicionar item</button>
   <div class="actions"><button type="button" class="btn primary" id="eSave">Salvar e publicar</button><button type="button" class="btn" id="eCancel">Cancelar</button><span class="chgc" id="eChg" aria-live="polite"></span><span class="msg" id="eMsg" role="status"></span></div>`;
@@ -431,7 +426,18 @@ else{
   const app=initializeApp(firebaseConfig);
   db=getFirestore(app);auth=getAuth(app);
   iniciarAvisos(app);
-  onAuthStateChanged(auth,u=>{signedIn=!!u;$('lMsg').textContent='';if(!u&&editing)closeEditor();if(!u)sabEditing=false;render()});
+  onAuthStateChanged(auth,async u=>{
+    signedIn=!!u;lider=false;acessoChecado=false;$('lMsg').textContent='';
+    if(!u){if(editing)closeEditor();sabEditing=false;render();return}
+    render();
+    // Só a liderança consegue ler lideranca/acesso (o documento nem precisa existir)
+    try{await getDoc(doc(db,'lideranca','acesso'));lider=true}catch{lider=false}
+    acessoChecado=true;
+    if(auth.currentUser!==u)return;
+    if(!lider&&editing)closeEditor();
+    if(!lider)sabEditing=false;
+    render();
+  });
   onSnapshot(doc(db,'avisos','sabado'),d=>{sabLoaded=true;sabado=d.exists()?d.data():null;renderSabado();setupAvisos()},()=>{sabLoaded=false;renderSabado();setupAvisos()});
   onSnapshot(query(collection(db,'parciais'),orderBy('data','desc')),s=>{
     loaded=true;parciais=s.docs.map(d=>({id:d.id,...d.data()}));
